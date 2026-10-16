@@ -1145,3 +1145,37 @@ html { scroll-behavior: smooth; }
  .live-hours{margin-top:14px;padding:12px 14px;}
 }
 @media(prefers-reduced-motion:reduce){#hero .hero-img.on,.js.ready .hero-in>*,#hero::before,.hero-rule::before,.hero-rule::after{animation:none!important;clip-path:none!important;opacity:1!important;transform:none!important}}
+
+/* RATAN DARK LUXURY PATCH — overrides the older cream palette completely */
+:root{
+ --ink:#101010;--panel:#1b1b1b;--red:#a51f2b;--red-d:#86181f;--gold:#c7a66a;--ivory:#f5f0e7;--muted:#b5aea2;
+ --line:rgba(245,240,231,.13);--line-gold:rgba(199,166,106,.38);
+}
+html,body{background:#101010!important;color:#f5f0e7!important;color-scheme:dark!important}
+.top,.top.scrolled{background:rgba(15,14,14,.94)!important;border-bottom:1px solid rgba(199,166,106,.28)!important;box-shadow:0 8px 28px rgba(0,0,0,.22)!important}
+.top-nav a{color:#e5d9c8!important}.top-nav a:hover,.top-nav a.active{color:#d8b875!important}
+.cart-ico{color:#d8b875!important;border-color:rgba(199,166,106,.32)!important;background:#171515!important}
+.hero{background:#0c0b0b!important}
+section,section.band{background:#111!important;color:#f5f0e7!important;border-color:rgba(199,166,106,.13)!important}
+section h2,.wrap>h2,.cap h3,.menu-sheet h2,.drawer h2,.ms-head h2{color:#f5f0e7!important}
+.eyebrow{color:#d8b875!important}.eyebrow b{color:#a51f2b!important}
+.text,.note,.ds,.tdesc,.field label{color:#b5aea2!important}
+.tile,.visit-grid .vb,.vb,.form.panel,.panel,.menu-sheet,.drawer{background:#1b1919!important;color:#f5f0e7!important;border-color:rgba(199,166,106,.2)!important;box-shadow:0 12px 34px rgba(0,0,0,.25)!important}
+.tile-media{background:#141212!important}.tile-media .bg{filter:blur(18px) brightness(.62)!important;opacity:.28!important}
+.cap h3,.nm,.hours td,.drawer .row,.menu-sheet .row{color:#f5f0e7!important}
+.pr,.ms-cats button.active{color:#d8b875!important}
+.row{color:#f5f0e7!important;border-bottom-color:rgba(199,166,106,.15)!important}
+.row:hover{background:rgba(199,166,106,.055)!important}
+.stepper{background:#171515!important;color:#d8b875!important;border-color:rgba(199,166,106,.28)!important}.stepper button{color:#d8b875!important}
+.ms-head,.ms-cats{background:rgba(20,18,18,.97)!important;color:#f5f0e7!important;border-color:rgba(199,166,106,.18)!important}
+.ms-cats button{color:#c6b9a8!important}
+input,select,textarea,.form.panel{background:#171515!important;color:#f5f0e7!important;border-color:rgba(199,166,106,.24)!important}
+input::placeholder,textarea::placeholder{color:#9f9588!important}
+.btn-line,.btn-ghost,.btn-lightline{color:#f5f0e7!important;border-color:rgba(199,166,106,.55)!important;background:rgba(16,16,16,.55)!important}
+.btn-line:hover,.btn-ghost:hover,.btn-lightline:hover{background:#29201b!important;border-color:#d8b875!important}
+.btn-red,.add{background:#a51f2b!important;border-color:#a51f2b!important;color:#fff5e8!important}
+.btn-red:hover,.add:hover{background:#86181f!important;border-color:#d8b875!important}
+section.band{background:#151313!important}
+.foot{background:#0b0a0a!important;color:#f5f0e7!important}
+.footer-contact-cta{background:#1b1919!important;border-color:rgba(199,166,106,.22)!important}
+@media(max-width:759px){.top{background:rgba(15,14,14,.97)!important}.hero{min-height:calc(88svh - env(safe-area-inset-bottom,0px))}}
