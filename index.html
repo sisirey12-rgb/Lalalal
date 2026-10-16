@@ -35,6 +35,13 @@
 </script>
 <link rel="stylesheet" href="css/style.css?v=20261017-darkfix">
 <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.11/dist/lenis.css">
+
+<style>
+  .live-hours-status{display:flex;align-items:center;gap:.55rem;margin:.25rem 0 1.1rem;font-size:.92rem;font-weight:700;letter-spacing:.04em;color:#d8c18a}
+  .live-hours-status::before{content:"";width:.55rem;height:.55rem;flex:0 0 .55rem;border-radius:50%;background:currentColor;box-shadow:0 0 .7rem currentColor}
+  .live-hours-status.is-open{color:#79d7a0}
+  .live-hours-status.is-closed{color:#f08a8a}
+</style>
 </head>
 <body class="loading">
 <div class="loader" id="loader" aria-hidden="true">
@@ -199,6 +206,7 @@
       </div>
       <div class="vb">
         <h3>Opening hours</h3>
+        <p id="liveHoursStatus" class="live-hours-status" role="status" aria-live="polite">Checking current status…</p>
         <table class="hours">
           <caption class="sr">Opening hours</caption>
           <tr><th scope="row">Monday</th><td>11 AM – 4 PM<br>6 PM – 11 PM</td></tr>
@@ -322,6 +330,51 @@
 
 <noscript><p style="padding:24px;text-align:center">Please turn on JavaScript to see the menu. You can call us on +91 91751 12217.</p></noscript>
 
+
+<script>
+(function () {
+  const el = document.getElementById('liveHoursStatus');
+  if (!el) return;
+  const tz = 'Asia/Kolkata';
+  const weekdayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function partsNow() {
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'long', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+    const get = type => parts.find(part => part.type === type)?.value;
+    return { day: get('weekday'), hour: Number(get('hour')), minute: Number(get('minute')) };
+  }
+  function update() {
+    const now = partsNow();
+    const minutes = now.hour * 60 + now.minute;
+    const tuesday = now.day === 'Tuesday';
+    let open = false;
+    let next = '';
+    if (minutes >= 11 * 60 && minutes < 16 * 60) open = true;
+    else if (!tuesday && minutes >= 18 * 60 && minutes < 23 * 60) open = true;
+    if (open) {
+      el.textContent = 'OPEN NOW · Closes at ' + (minutes < 16 * 60 ? '4 PM' : '11 PM') + ' · Goa time';
+      el.classList.add('is-open'); el.classList.remove('is-closed');
+      return;
+    }
+    if (minutes < 11 * 60) next = 'Opens at 11 AM';
+    else if (minutes < 18 * 60 && !tuesday) next = 'Reopens at 6 PM';
+    else {
+      // Find the next day that has a session; Tuesday has lunch only.
+      const dayIndex = weekdayNames.indexOf(now.day);
+      let daysAhead = 1;
+      while (daysAhead <= 7) {
+        const candidate = weekdayNames[(dayIndex + daysAhead) % 7];
+        if (candidate) break;
+        daysAhead++;
+      }
+      next = 'Opens tomorrow at 11 AM';
+    }
+    el.textContent = 'CLOSED NOW · ' + next + ' · Goa time';
+    el.classList.add('is-closed'); el.classList.remove('is-open');
+  }
+  update();
+  window.setInterval(update, 60000);
+})();
+</script>
 <script src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
