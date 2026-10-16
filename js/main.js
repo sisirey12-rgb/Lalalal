@@ -2,7 +2,7 @@
 
 /* ===== Existing RATAN application logic (preserved) ===== */
 
-const IMG = {"ramen": "assets/food-ramen.webp", "interior": "assets/food-interior.webp", "table": "assets/food-table.webp", "food": "assets/food-food.webp", "team": "assets/food-team.webp", "artist": "assets/food-artist.webp", "cigar": "assets/food-cigar.webp", "jhol": "assets/food-jhol.webp", "momos": "assets/food-momos.webp", "wings": "assets/food-wings.webp", "pasta": "assets/food-pasta.webp", "khao": "assets/food-khao.webp", "tempura": "assets/food-tempura.webp", "chilly": "assets/food-chilly.webp", "logo": "assets/ratan-logo.webp", "heroWok": "assets/ratan-hero.png"};
+const IMG = {"ramen": "assets/food-ramen.webp", "interior": "assets/food-interior.webp", "table": "assets/food-table.webp", "food": "assets/food-food.webp", "team": "assets/food-team.webp", "artist": "assets/food-artist.webp", "cigar": "assets/food-cigar.webp", "jhol": "assets/food-jhol.webp", "momos": "assets/food-momos.webp", "wings": "assets/food-wings.webp", "pasta": "assets/food-pasta.webp", "khao": "assets/food-khao.webp", "tempura": "assets/food-tempura.webp", "chilly": "assets/food-chilly.webp", "logo": "assets/ratan-logo.webp", IMG.ratanHero = "assets/ratan-hero.png";
 IMG.ratanHero = "assets/ratan-hero.png";
 const CONFIG = {
   restaurant: "RATAN Chinese Family Bar and Restaurant",
