@@ -18,7 +18,7 @@ const CONFIG = {
   currency: "₹",
     // Hero slideshow: each slide uses a landscape food photo (a key from IMG). One slide = no indicators.
   heroSlides: [
-    {img: "heroWok", alt: "A cinematic bowl of fried rice with chicken and vegetables in a luxury Chinese restaurant setting", pos: "68% 50%"}
+    {img: "ratanHero", alt: "RATAN Chinese original hero image", pos: "center center"}
   ],
   heroTagline: ["Wok-tossed flavours.", "Made for sharing."]
 };
@@ -261,7 +261,25 @@ $("#footContact").innerHTML =
   `<p>${CONFIG.phones.map(esc).join("<br>")}</p><p style="margin-top:10px">${CONFIG.address.map(esc).join("<br>")}</p>` +
   (pending(CONFIG.instagram) ? "" : `<p style="margin-top:10px"><a href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Instagram</a></p>`);
 const dayRows = $$(".hours tr");
-if (dayRows.length === 7) dayRows[(new Date().getDay() + 6) % 7].classList.add("today");
+const goaClock = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+function updateLiveHours() {
+  const parts = Object.fromEntries(goaClock.formatToParts(new Date()).map(p => [p.type, p.value]));
+  const weekday = parts.weekday;
+  const minutes = Number(parts.hour) * 60 + Number(parts.minute);
+  const isTuesday = weekday === "Tuesday";
+  const openNow = (minutes >= 660 && minutes < 960) || (!isTuesday && minutes >= 1080 && minutes < 1380);
+  const nextOpen = minutes < 660 ? "Opens today at 11:00 AM" : (minutes < 1080 && !isTuesday ? "Reopens today at 6:00 PM" : (minutes < 1080 && isTuesday ? "Opens tomorrow at 11:00 AM" : "Opens tomorrow at 11:00 AM"));
+  const state = $("#liveHoursState"), detail = $("#liveHoursDetail"), box = $("#liveHours");
+  if (state && detail && box) {
+    box.classList.toggle("is-open", openNow);
+    box.classList.toggle("is-closed", !openNow);
+    state.textContent = openNow ? "OPEN NOW" : "CLOSED NOW";
+    detail.textContent = openNow ? (minutes < 960 ? "Lunch service · closes at 4:00 PM" : "Dinner service · closes at 11:00 PM") : nextOpen;
+  }
+  if (dayRows.length === 7) dayRows.forEach(row => row.classList.toggle("today", row.querySelector("th")?.textContent.trim() === weekday));
+}
+updateLiveHours();
+setInterval(updateLiveHours, 60000);
 const t0 = new Date(), pad = n => String(n).padStart(2, "0");
 $("#rd").min = `${t0.getFullYear()}-${pad(t0.getMonth() + 1)}-${pad(t0.getDate())}`;
 syncOrderType();
@@ -342,7 +360,7 @@ onCartChange();
 (function(){
   const loader = $("#loader"), fill = $("#ldFill");
   let p = 0, ready = false, finished = false;
-  const MIN = 1500;                            // never flash: show the screen for at least this long
+  const MIN = 2650;                            // allow the cinematic logo reveal to finish before the curtain opens
   const finish = () => {
     if (finished) return; finished = true;
     fill.style.transform = "scaleX(1)";
@@ -363,7 +381,7 @@ onCartChange();
   requestAnimationFrame(frame);
   const markLoaded = () => setTimeout(() => { ready = true; }, Math.max(0, MIN - performance.now()));
   if (document.readyState === "complete") markLoaded(); else window.addEventListener("load", markLoaded);
-  setTimeout(finish, 5000);                    // safety net if something loads slowly
+  setTimeout(finish, 5900);                    // safety net; CSS also has a failsafe
 })();
 
 
