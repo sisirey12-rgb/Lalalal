@@ -38,12 +38,17 @@
 </head>
 <body class="loading">
 <div class="loader" id="loader" aria-hidden="true">
+  <div class="ld-ambient" aria-hidden="true"></div>
+  <div class="ld-axis" aria-hidden="true"><i></i></div>
+  <div class="ld-corner ld-corner-a" aria-hidden="true"></div><div class="ld-corner ld-corner-b" aria-hidden="true"></div>
   <div class="ld-panel ld-l"></div><div class="ld-panel ld-r"></div>
   <div class="loader-in">
-    <img src="assets/ratan-logo.webp" alt="RATAN Chinese Family Spot with Bar" width="240" fetchpriority="high">
+    <span class="ld-kicker">A TASTE OF SOMETHING SPECIAL</span>
+    <div class="ld-logo-wrap"><span class="ld-logo-halo" aria-hidden="true"></span><img src="assets/ratan-logo.webp" alt="RATAN Chinese Family Spot with Bar" width="330" fetchpriority="high"></div>
     <div class="orn"><i></i></div>
-    <div class="loader-line"><i id="ldFill"></i></div>
+    <div class="loader-line"><i id="ldFill"></i><b aria-hidden="true"></b></div>
     <p>Good Food, Good Mood.</p>
+    <span class="ld-footnote">CHINESE CUISINE <i></i> FAMILY DINING <i></i> GOA</span>
   </div>
 </div>
 
@@ -199,6 +204,10 @@
       </div>
       <div class="vb">
         <h3>Opening hours</h3>
+        <div class="live-hours" id="liveHours" role="status" aria-live="polite">
+          <span class="live-dot" aria-hidden="true"></span>
+          <div><strong id="liveHoursState">Checking hours…</strong><small id="liveHoursDetail">Local time in Goa</small></div>
+        </div>
         <table class="hours">
           <caption class="sr">Opening hours</caption>
           <tr><th scope="row">Monday</th><td>11 AM – 4 PM<br>6 PM – 11 PM</td></tr>
