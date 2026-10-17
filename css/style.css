@@ -108,17 +108,6 @@ h3{font-size:24px;line-height:1.15}
 .hero-dots button.on::before{background:var(--gold)}
 .cloud{display:none;position:absolute;left:0;bottom:80px;width:170px;opacity:.55;pointer-events:none}
 
-.js .hero-in>*{opacity:0;transform:translateY(26px)}
-.js.ready .hero-in>*{animation:rise 1s var(--ease) forwards}
-.js.ready .hero-in>*:nth-child(1){animation-delay:.05s}
-.js.ready .hero-in>*:nth-child(2){animation-delay:.18s}
-.js.ready .hero-in>*:nth-child(3){animation-delay:.32s}
-.js.ready .hero-in>*:nth-child(4){animation-delay:.45s}
-.js.ready .hero-in>*:nth-child(5){animation-delay:.58s}
-.js.ready .hero-in>*:nth-child(6){animation-delay:.7s}
-@keyframes rise{to{opacity:1;transform:none}}
-.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
-.js .reveal.in-view{opacity:1;transform:none}
 
 /* welcome */
 .about-grid{display:grid;gap:48px}
@@ -291,26 +280,6 @@ h3{font-size:24px;line-height:1.15}
 .clear:hover{color:var(--gold)}
 
 
-/* loading screen */
-.loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;animation:loaderFailsafe .01s 5.4s forwards}
-.ld-panel{position:absolute;top:0;bottom:0;width:50.3%;background:var(--ink);transition:transform 1.05s cubic-bezier(.77,0,.18,1) .3s}
-.ld-l{left:0}.ld-r{right:0}
-.ld-l::after,.ld-r::after{content:"";position:absolute;top:0;bottom:0;width:1px;background:var(--line-gold)}
-.ld-l::after{right:0}.ld-r::after{left:0}
-.loader-in{position:relative;z-index:2;display:grid;justify-items:center;gap:22px;padding:24px;text-align:center;transition:opacity .4s var(--ease),transform .5s var(--ease)}
-.loader-in::before{content:"";position:absolute;left:50%;top:50%;width:140vmax;height:140vmax;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(199,166,106,.09),transparent 42%);z-index:-1;pointer-events:none}
-.loader-in img{width:min(60vw,240px);height:auto;animation:loaderIn 1s var(--ease) both}
-.loader-in .orn{width:min(50vw,190px);animation:loaderIn 1s .15s var(--ease) both}
-.loader-line{width:min(52vw,190px);height:1px;background:rgba(245,240,231,.16);overflow:hidden;animation:loaderIn 1s .25s var(--ease) both}
-.loader-line i{display:block;height:100%;background:var(--gold);transform-origin:left center;transform:scaleX(0)}
-.loader p{font:italic 500 20px/1.2 var(--serif);color:var(--gold);letter-spacing:.02em;animation:loaderIn 1s .35s var(--ease) both}
-.loader.done{pointer-events:none;visibility:hidden;transition:visibility 0s linear 1.45s}
-.loader.done .loader-in{opacity:0;transform:scale(.96)}
-.loader.done .ld-l{transform:translateX(-101%)}
-.loader.done .ld-r{transform:translateX(101%)}
-body.loading{overflow:hidden}
-@keyframes loaderIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes loaderFailsafe{to{opacity:0;visibility:hidden}}
 
 @media (min-width:760px){
   :root{--sec:112px;--gut:32px}
@@ -369,18 +338,12 @@ body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; 
   .gallery-grid img { transition: transform .7s var(--ease), filter .7s var(--ease); }
   .gallery-grid a:hover img, .gallery-grid figure:hover img { transform: scale(1.025); }
 }
-.motion-reveal { opacity: 0; transform: translate3d(0, 18px, 0); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--reveal-delay, 0ms); will-change: opacity, transform; }
-.motion-reveal.is-visible { opacity: 1; transform: translate3d(0, 0, 0); will-change: auto; }
 .hero { isolation: isolate; }
 .hero::before { pointer-events: none; }
 img { backface-visibility: hidden; }
-@media (max-width: 600px) {
-  .motion-reveal { transform: translate3d(0, 12px, 0); transition-duration: .55s; }
-}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
-  .motion-reveal { opacity: 1 !important; transform: none !important; }
 }
 
 
@@ -389,10 +352,6 @@ img { backface-visibility: hidden; }
 .top { background:rgba(12,10,9,.92); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); }
 .top.scrolled { box-shadow:0 12px 36px rgba(0,0,0,.26); }
 .brand-logo { display:block; width:clamp(112px,16vw,156px); height:auto; max-height:72px; object-fit:contain; }
-.loader { background:#0c0a09; }
-.loader-in img { width:min(76vw,330px); max-height:190px; object-fit:contain; filter:drop-shadow(0 10px 30px rgba(181,31,45,.12)); }
-.loader-line { border-radius:99px; }
-.loader-line i { background:linear-gradient(90deg,var(--ratan-red),var(--ratan-gold)); }
 
 /* A proper full-width promotional banner, not a cropped background. */
 .foot { padding-top:0; overflow:hidden; }
@@ -937,28 +896,6 @@ section{background-color:transparent}
 .menu-sheet,.drawer{background:#100b0b;background-image:none;box-shadow:-12px 0 40px rgba(0,0,0,.38)}
 .ms-head,.ms-cats{background:#100b0b;backdrop-filter:none}
 .bar{background:rgba(11,9,9,.97);backdrop-filter:blur(8px);box-shadow:0 -6px 20px rgba(0,0,0,.2)}
-/* Short, understated page intro; never hold the visitor behind a theatrical curtain. */
-.loader{background:#0b0909;animation:none;transition:opacity .28s ease,visibility .28s ease}
-.ld-panel{display:none}
-.loader-in{gap:14px;transition:opacity .22s ease,transform .22s ease}
-.loader-in img{width:min(58vw,210px);max-height:120px;animation:none;filter:none}
-.loader-in .orn,.loader-line,.loader p{animation:none}
-.loader-in .orn{width:150px}
-.loader-line{height:2px;border-radius:0}
-.loader-line i{background:var(--gold)}
-.loader p{font-size:17px;color:#c7a66a}
-.loader.done{visibility:hidden;transition:opacity .28s ease,visibility 0s linear .28s}
-.loader.done .loader-in{opacity:0;transform:translateY(4px)}
-.js .hero-in>*{opacity:1;transform:none}
-.js.ready .hero-in>*{animation:heroSoftIn .48s var(--ease) both}
-.js.ready .hero-in>*:nth-child(1){animation-delay:.02s}
-.js.ready .hero-in>*:nth-child(2){animation-delay:.06s}
-.js.ready .hero-in>*:nth-child(3){animation-delay:.1s}
-.js.ready .hero-in>*:nth-child(4){animation-delay:.14s}
-.js.ready .hero-in>*:nth-child(5){animation-delay:.18s}
-.js.ready .hero-in>*:nth-child(6){animation-delay:.22s}
-@keyframes heroSoftIn{from{opacity:.5;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.js .reveal{transform:translateY(12px);transition:opacity .45s ease,transform .45s ease}
 @media(hover:hover) and (pointer:fine){.foot-col a:hover{transform:translateX(2px)}}
 @media(max-width:759px){
   :root{--header:68px;--gut:18px;--sec:68px}
@@ -1015,4 +952,104 @@ section.band, section#story { background-color:#0b0909 !important; background-im
   #visit .visit-grid { gap:14px !important; }
   #visit .vb { border-radius:4px !important; padding:24px 20px !important; }
   #visit .platforms a, #visit .platforms button { width:100%; }
+}
+
+/* =====================================================================
+   RATAN V4: entrance gate, hero hand-off, live opening status
+   (replaces the old .loader / .motion-reveal / hero-in animation rules)
+   ===================================================================== */
+:root{
+  --out-expo:cubic-bezier(.16,1,.3,1);--gate-ease:cubic-bezier(.76,0,.18,1);
+  --st-open:#7fd9a4;--st-soon:#f1c56b;--st-closed:#f08a8a;--st-idle:#b8aa9a;
+}
+
+/* ---------- entrance gate: two lacquered doors that part onto the hero ---------- */
+html:not(.js) .gate{display:none}
+body.loading{overflow:hidden}
+.gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;animation:gateFailsafe .01s 7s forwards}
+.gate-door{position:absolute;top:0;bottom:0;width:50.2%;background:var(--lattice),radial-gradient(120% 80% at 50% 0%,#2b0f13 0%,#150a0b 52%,#0b0909 100%);transition:transform 1.1s var(--gate-ease) .38s;will-change:transform}
+.gate-door.l{left:0}.gate-door.r{right:0}
+.gate-door::after{content:"";position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--gold) 30%,var(--gold) 70%,transparent);opacity:.55}
+.gate-door.l::after{right:0}.gate-door.r::after{left:0}
+.gate-core{position:relative;z-index:2;display:grid;justify-items:center;gap:clamp(16px,3.4vh,26px);padding:24px;text-align:center;transition:opacity .45s var(--ease),transform .6s var(--ease),filter .45s ease}
+.gate-core::before{content:"";position:absolute;left:50%;top:50%;width:min(130vmin,900px);height:min(130vmin,900px);transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(181,31,45,.2),rgba(216,184,117,.06) 38%,transparent 62%);z-index:-1;pointer-events:none;animation:gateGlow 2.6s ease-in-out infinite alternate}
+.gate-logo{width:min(64vw,310px);height:auto;max-height:180px;object-fit:contain;animation:gateLogo 1.15s var(--out-expo) .1s both}
+.gate-rule{display:flex;align-items:center;gap:12px;width:min(56vw,250px)}
+.gate-rule::before,.gate-rule::after{content:"";flex:1;height:1px;transform:scaleX(0);animation:gateLine 1s var(--out-expo) .55s forwards}
+.gate-rule::before{background:linear-gradient(90deg,transparent,var(--gold));transform-origin:right center}
+.gate-rule::after{background:linear-gradient(270deg,transparent,var(--gold));transform-origin:left center}
+.gate-rule i{flex:none;width:9px;height:9px;border:1px solid var(--gold);transform:rotate(45deg) scale(0);animation:gateDiamond .7s var(--out-expo) .45s forwards}
+.gate-tag{font:italic 500 clamp(17px,4.4vw,22px)/1.2 var(--serif);color:var(--gold);letter-spacing:.02em;animation:gateTag 1s var(--out-expo) .8s both}
+.gate-foot{position:absolute;z-index:2;left:var(--gut);right:var(--gut);bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;justify-content:space-between;gap:16px;transition:opacity .35s ease}
+.gate-place{font:600 10.5px/1.5 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:rgba(248,241,229,.55)}
+.gate-count{font:italic 500 clamp(44px,9vw,76px)/.8 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums}
+.gate-count small{margin-left:4px;font:600 12px/1 var(--sans);letter-spacing:.16em;color:rgba(248,241,229,.55)}
+.gate-bar{position:absolute;z-index:2;left:0;right:0;bottom:0;height:2px;background:rgba(248,241,229,.08);transition:opacity .35s ease}
+.gate-bar i{display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--red),var(--gold))}
+.gate.is-leaving{pointer-events:none}
+.gate.is-leaving .gate-core{opacity:0;transform:translateY(-14px) scale(.985);filter:blur(3px)}
+.gate.is-leaving .gate-foot,.gate.is-leaving .gate-bar{opacity:0}
+.gate.is-leaving .gate-door.l{transform:translateX(-101.5%)}
+.gate.is-leaving .gate-door.r{transform:translateX(101.5%)}
+@keyframes gateLogo{from{opacity:0;transform:translateY(14px) scale(.96);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes gateLine{to{transform:scaleX(1)}}
+@keyframes gateDiamond{to{transform:rotate(45deg) scale(1)}}
+@keyframes gateTag{from{opacity:0;transform:translateY(8px);letter-spacing:.2em}to{opacity:1;transform:none;letter-spacing:.02em}}
+@keyframes gateGlow{from{opacity:.65;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1.04)}}
+@keyframes gateFailsafe{to{opacity:0;visibility:hidden;pointer-events:none}}
+@media (max-width:380px){.gate-place{display:none}.gate-foot{justify-content:flex-end}}
+
+/* ---------- hero hand-off: starts the moment the doors begin to part ---------- */
+.js .hero-in>*{opacity:0;transform:translate3d(0,22px,0)}
+.js.ready .hero-in>*{animation:heroRise 1s var(--out-expo) both;animation-delay:calc(var(--i,0) * 90ms + 60ms)}
+.js .hero-img{transform:scale(1.14);transition:opacity .9s ease,transform 3.2s var(--out-expo)}
+.js.ready .hero-img.on{transform:scale(1.02)}
+.js .top,.js .bar{opacity:0}
+.js.ready .top{animation:chromeIn .9s var(--out-expo) .3s both}
+.js.ready .bar{animation:barIn .9s var(--out-expo) .7s both}
+@keyframes heroRise{from{opacity:0;transform:translate3d(0,22px,0)}to{opacity:1;transform:none}}
+@keyframes chromeIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes barIn{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:none}}
+/* if the script ever fails, the page must not stay blank */
+html.js:not(.ready) .hero-in>*,html.js:not(.ready) .top,html.js:not(.ready) .bar{animation:chromeFail .01s 7.4s forwards}
+@keyframes chromeFail{to{opacity:1;transform:none}}
+
+/* ---------- scroll reveal (single system; script removes the class after it plays) ---------- */
+.js .reveal{opacity:0;transform:translate3d(0,22px,0);transition:opacity .8s var(--out-expo),transform .8s var(--out-expo);transition-delay:var(--rd,0ms);will-change:opacity,transform}
+.js .reveal.in-view{opacity:1;transform:none}
+@media (max-width:759px){.js .reveal{transform:translate3d(0,14px,0);transition-duration:.6s}}
+
+/* ---------- live opening status (hero pill, hours card, closed notes) ---------- */
+[data-live]{--st:var(--st-idle)}
+[data-live][data-state="open"]{--st:var(--st-open)}
+[data-live][data-state="closing"],[data-live][data-state="soon"]{--st:var(--st-soon)}
+[data-live][data-state="closed"]{--st:var(--st-closed)}
+.live-dot{position:relative;flex:none;width:9px;height:9px;border-radius:50%;background:var(--st);box-shadow:0 0 12px var(--st);transition:background-color .4s,box-shadow .4s}
+.live-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--st);opacity:.6;animation:livePing 2.4s ease-out infinite}
+[data-live][data-state="closed"] .live-dot::after,[data-live][data-state="pending"] .live-dot::after{animation:none;opacity:0}
+@keyframes livePing{0%{transform:scale(1);opacity:.6}80%,100%{transform:scale(3.1);opacity:0}}
+.live-state{color:var(--st);transition:color .4s}
+
+.live-pill{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 12px;max-width:100%;margin-top:24px;padding:10px 18px 10px 15px;border:1px solid rgba(216,184,117,.34);border-radius:999px;background:rgba(11,9,9,.58);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.live-pill .live-state{font:700 11.5px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.live-pill .live-detail{font:500 13.5px/1.3 var(--sans);letter-spacing:.01em;color:#d9cdbf}
+.live-pill .live-detail::before{content:"";display:inline-block;width:1px;height:12px;margin-right:12px;background:rgba(248,241,229,.25);vertical-align:-1px}
+@media (max-width:480px){.live-pill{border-radius:18px}.live-pill .live-detail::before{display:none}}
+
+.hours-live{display:flex;align-items:center;gap:14px;margin:4px 0 20px;padding:14px 16px;border:1px solid rgba(248,241,229,.12);border-left:3px solid var(--st);border-radius:3px;background:rgba(255,255,255,.03);background:linear-gradient(90deg,color-mix(in srgb,var(--st) 12%,transparent),rgba(255,255,255,.02) 70%);transition:border-color .4s}
+.hours-live .live-state{display:block;font:700 12px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase}
+.hours-live .live-detail{display:block;margin-top:4px;font:500 14px/1.4 var(--sans);color:#d9cdbf}
+.hours-live .live-zone{display:block;margin-top:6px;font:500 10.5px/1.2 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.hours tr{transition:background-color .4s}
+.hours tr.today th{color:var(--gold)}
+
+.closed-note{margin:0;padding:12px 14px;border:1px solid rgba(240,138,138,.38);border-left-width:3px;border-radius:3px;background:rgba(240,138,138,.07);font-size:13.5px;line-height:1.5;color:#f1d0cc}
+
+/* ---------- reduced motion: no theatre, everything simply appears ---------- */
+@media (prefers-reduced-motion:reduce){
+  .gate-door{transition:none!important}
+  .gate-rule::before,.gate-rule::after{transform:none!important}
+  .gate-rule i{transform:rotate(45deg)!important}
+  .js .hero-in>*,.js .top,.js .bar,.js .reveal{opacity:1!important;transform:none!important}
+  .js .hero-img{transform:none!important}
 }
