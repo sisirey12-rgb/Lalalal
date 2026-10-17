@@ -307,14 +307,14 @@ function renderCart(){
   const ls = lines();
   $("#cartLines").innerHTML = ls.length ? ls.map(({d, q}) => {
     const o = opts[d.id] || {};
-    const extra = spiceOk(d) ? `<div class="cl-opts"><div class="spice" role="group" aria-label="Spice level for ${esc(d.name)}">${["Mild", "Medium", "Hot"].map(x => `<button type="button" data-spice="${x}" data-id="${d.id}" aria-pressed="${o.spice === x}" class="${o.spice === x ? "on" : ""}">${x}</button>`).join("")}</div><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
+    const extra = spiceOk(d) ? `<div class="cl-opts"><select data-opt="spice" data-id="${d.id}" aria-label="Spice level for ${esc(d.name)}"><option value="">Spice level</option>${["Mild", "Medium", "Hot"].map(x => `<option${o.spice === x ? " selected" : ""}>${x}</option>`).join("")}</select><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
     return `<div class="cart-line"><div class="cl-main"><div><strong>${esc(d.name)}</strong><small>${esc(d.label)} each</small></div>${stepperHtml(d.id, q)}</div>${extra}</div>`;
   }).join("")
     : `<p class="empty">Your order is empty. Add a few dishes from the menu.</p>`;
   const lo = lastOrder(); $("#reorderBtn").hidden = !!ls.length || !lo;
   const sg = suggestions();
   $("#cartSuggest").hidden = !sg.length;
-  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i class="plus" aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
+  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
   const bz = busyNow(), w = $("#cartWait");
   w.hidden = bz === null;
   if (bz !== null) { w.className = "wait" + (bz ? " busy" : ""); w.textContent = bz ? `We're busy right now. Please allow about ${CONFIG.wait.busy}.` : `Usually ready in about ${CONFIG.wait.normal}.`; }
@@ -348,12 +348,7 @@ function onCartChange(id){
   $("#msBarCount").textContent = n + (n === 1 ? " item" : " items");
   renderCart();
 }
-document.addEventListener("click", e => {
-  const b = e.target.closest("button[data-spice]"); if (!b) return;
-  const o = opts[b.dataset.id] = opts[b.dataset.id] || {};
-  o.spice = o.spice === b.dataset.spice ? "" : b.dataset.spice;       // tap again to clear
-  b.parentElement.querySelectorAll("button").forEach(x => { const on = x.dataset.spice === o.spice; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
-});
+document.addEventListener("change", e => { const t = e.target; if (t.dataset && t.dataset.opt === "spice") (opts[t.dataset.id] = opts[t.dataset.id] || {}).spice = t.value; });
 document.addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.opt === "note") (opts[t.dataset.id] = opts[t.dataset.id] || {}).note = t.value.trim(); });
 $("#reorderBtn").addEventListener("click", () => {
   const lo = lastOrder(); if (!lo) return;
@@ -823,4 +818,3 @@ onCartChange();
     b.addEventListener("mouseleave", () => { b.style.transform = ""; });
   });
 })();
-
