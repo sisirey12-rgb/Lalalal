@@ -639,14 +639,6 @@ body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;bac
 /* step cards lift on hover */
 @media (hover:hover){.steps li{transition:transform .4s var(--out-expo),border-color .3s}.steps li:hover{transform:translateY(-6px);border-color:var(--line-gold)}}
 @media (prefers-reduced-motion:reduce){.hero-img.on,.h1-main,.hero-cta .btn-red,.hero-rule svg,.mq-track i{animation:none!important}}
-/* themed spice picker (replaces the phone's native dropdown) */
-.cl-opts{flex-direction:column;gap:10px}
-.spice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.spice button{min-height:40px;border:1px solid var(--line-2);border-radius:999px;background:transparent;color:var(--muted);font:600 11.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
-.spice button::before{content:"🌶";margin-right:6px;filter:grayscale(1) brightness(.9);opacity:.7;font-size:12px}
-.spice button.on{border-color:var(--gold);color:var(--gold);background:rgba(216,184,117,.1)}
-.spice button.on::before{filter:none;opacity:1}
-.cl-opts input{width:100%}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
