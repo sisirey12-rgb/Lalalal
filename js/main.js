@@ -414,15 +414,6 @@ onCartChange();
       return `<tr data-day="${d}"><th scope="row">${DAY_NAMES[d]}</th><td>${cell}</td></tr>`;
     }).join("");
   }
-  const foot = $("#footHours");
-  if (foot) {   // group neighbouring days that share the same hours: "Mon", "Tue", "Wed - Sun"
-    const short = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], groups = [];
-    [1, 2, 3, 4, 5, 6, 0].forEach(d => {
-      const key = JSON.stringify(CONFIG.hours[d] || []), g = groups[groups.length - 1];
-      if (g && g.key === key) g.days.push(d); else groups.push({key, days: [d], list: CONFIG.hours[d] || []});
-    });
-    foot.innerHTML = groups.map(g => `<div class="fh"><span>${g.days.length > 1 ? `${short[g.days[0]]} to ${short[g.days[g.days.length - 1]]}` : short[g.days[0]]}</span><span>${g.list.length ? g.list.map(([o, c]) => `${fmtClock(o)} – ${fmtClock(c)}`).join("<br>") : "Closed"}</span></div>`).join("");
-  }
   const rows = table ? [...table.querySelectorAll("tr[data-day]")] : [];
   let last = "", timer = null;
   function paint() {
