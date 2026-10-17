@@ -307,14 +307,14 @@ function renderCart(){
   const ls = lines();
   $("#cartLines").innerHTML = ls.length ? ls.map(({d, q}) => {
     const o = opts[d.id] || {};
-    const extra = spiceOk(d) ? `<div class="cl-opts"><select data-opt="spice" data-id="${d.id}" aria-label="Spice level for ${esc(d.name)}"><option value="">Spice level</option>${["Mild", "Medium", "Hot"].map(x => `<option${o.spice === x ? " selected" : ""}>${x}</option>`).join("")}</select><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
+    const extra = spiceOk(d) ? `<div class="cl-opts"><div class="spice" role="group" aria-label="Spice level for ${esc(d.name)}">${["Mild", "Medium", "Hot"].map(x => `<button type="button" data-spice="${x}" data-id="${d.id}" aria-pressed="${o.spice === x}" class="${o.spice === x ? "on" : ""}">${x}</button>`).join("")}</div><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
     return `<div class="cart-line"><div class="cl-main"><div><strong>${esc(d.name)}</strong><small>${esc(d.label)} each</small></div>${stepperHtml(d.id, q)}</div>${extra}</div>`;
   }).join("")
     : `<p class="empty">Your order is empty. Add a few dishes from the menu.</p>`;
   const lo = lastOrder(); $("#reorderBtn").hidden = !!ls.length || !lo;
   const sg = suggestions();
   $("#cartSuggest").hidden = !sg.length;
-  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
+  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i class="plus" aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
   const bz = busyNow(), w = $("#cartWait");
   w.hidden = bz === null;
   if (bz !== null) { w.className = "wait" + (bz ? " busy" : ""); w.textContent = bz ? `We're busy right now. Please allow about ${CONFIG.wait.busy}.` : `Usually ready in about ${CONFIG.wait.normal}.`; }
@@ -348,7 +348,12 @@ function onCartChange(id){
   $("#msBarCount").textContent = n + (n === 1 ? " item" : " items");
   renderCart();
 }
-document.addEventListener("change", e => { const t = e.target; if (t.dataset && t.dataset.opt === "spice") (opts[t.dataset.id] = opts[t.dataset.id] || {}).spice = t.value; });
+document.addEventListener("click", e => {
+  const b = e.target.closest("button[data-spice]"); if (!b) return;
+  const o = opts[b.dataset.id] = opts[b.dataset.id] || {};
+  o.spice = o.spice === b.dataset.spice ? "" : b.dataset.spice;       // tap again to clear
+  b.parentElement.querySelectorAll("button").forEach(x => { const on = x.dataset.spice === o.spice; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+});
 document.addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.opt === "note") (opts[t.dataset.id] = opts[t.dataset.id] || {}).note = t.value.trim(); });
 $("#reorderBtn").addEventListener("click", () => {
   const lo = lastOrder(); if (!lo) return;
@@ -734,40 +739,52 @@ onCartChange();
   const cv = $("#steam"); if (!cv) return;
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { cv.style.display = "none"; return; }
   const ctx = cv.getContext("2d"), hero = $("#hero");
-  let W = 0, H = 0, dpr = 1, running = false, visible = true, parts = [], last = 0;
+  let W = 0, H = 0, dpr = 1, running = false, visible = true, parts = [], sparks = [], last = 0, wide = true;
   const src = () => {
-    const wide = innerWidth >= 760;
     const [x, y] = (wide ? cv.dataset.d : cv.dataset.m).split(",").map(Number);
-    return {x: W * x / 100, y: H * y / 100, spread: Math.min(W, H) * (wide ? 0.13 : 0.2)};
+    return {x: W * x / 100, y: H * y / 100, spread: wide ? Math.min(W, H) * 0.16 : W * 0.34};
   };
   function size() {
+    wide = innerWidth >= 760;
     dpr = Math.min(devicePixelRatio || 1, 2);
     W = hero.clientWidth; H = hero.clientHeight;
     cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  // soft puff sprite, drawn once
-  const sp = document.createElement("canvas"); sp.width = sp.height = 128;
-  (function () { const c = sp.getContext("2d"), g = c.createRadialGradient(64, 64, 0, 64, 64, 64);
-    g.addColorStop(0, "rgba(255,246,232,.30)"); g.addColorStop(.45, "rgba(255,240,222,.09)"); g.addColorStop(1, "rgba(255,240,222,0)");
-    c.fillStyle = g; c.fillRect(0, 0, 128, 128); })();
+  const mk = (stops, n) => { const c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d"), r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2);
+    stops.forEach(([o, col]) => r.addColorStop(o, col)); g.fillStyle = r; g.fillRect(0, 0, n, n); return c; };
+  const puff = mk([[0, "rgba(255,248,236,.34)"], [.45, "rgba(255,242,226,.16)"], [1, "rgba(255,242,226,0)"]], 128);
+  const glow = mk([[0, "rgba(255,226,150,1)"], [.3, "rgba(255,170,70,.55)"], [1, "rgba(255,140,40,0)"]], 32);
   function spawn() {
-    const s = src(), unit = Math.min(W, H);
-    parts.push({x: s.x + (Math.random() - .5) * s.spread, y: s.y, vx: (Math.random() - .5) * 8, vy: -(unit * (.05 + Math.random() * .05)),
-      r: unit * (.05 + Math.random() * .05), life: 0, max: 4.5 + Math.random() * 3, ph: Math.random() * 6.28, sw: 10 + Math.random() * 18});
+    const s = src(), unit = wide ? Math.min(W, H) : H * 0.5;
+    parts.push({x: s.x + (Math.random() - .5) * s.spread, y: s.y, vx: (Math.random() - .5) * 10, vy: -(unit * (.07 + Math.random() * .07)),
+      r: unit * (.07 + Math.random() * .07), life: 0, max: 4.5 + Math.random() * 3.5, ph: Math.random() * 6.28, sw: 14 + Math.random() * 26});
   }
-  let acc = 0;
+  function spark() {
+    const s = src(), unit = wide ? Math.min(W, H) : H * 0.5;
+    sparks.push({x: s.x + (Math.random() - .5) * s.spread * .7, y: s.y + unit * .04, vx: (Math.random() - .5) * 26, vy: -(unit * (.18 + Math.random() * .3)),
+      r: 3 + Math.random() * 5, life: 0, max: 1.4 + Math.random() * 2, ph: Math.random() * 6.28});
+  }
+  let acc = 0, accS = 0;
   function frame(t) {
     if (!running) return;
     const dt = Math.min((t - last) / 1000, .05); last = t;
-    acc += dt; while (acc > .17) { acc -= .17; if (parts.length < 46) spawn(); }
+    acc += dt; while (acc > .13) { acc -= .13; if (parts.length < 50) spawn(); }
+    accS += dt; while (accS > .09) { accS -= .09; if (sparks.length < 26) spark(); }
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "screen";
     parts = parts.filter(p => p.life < p.max);
     parts.forEach(p => {
       p.life += dt; const k = p.life / p.max;
       p.y += p.vy * dt * (1 - k * .4); p.x += (p.vx + Math.sin(p.life * 1.3 + p.ph) * p.sw) * dt;
-      const a = Math.sin(Math.PI * Math.min(k * 1.15, 1)) * 0.6, r = p.r * (.7 + k * 1.5);
-      ctx.globalAlpha = Math.max(a, 0); ctx.drawImage(sp, p.x - r, p.y - r, r * 2, r * 2);
+      const a = Math.sin(Math.PI * Math.min(k * 1.15, 1)) * (wide ? .5 : .75), r = p.r * (.7 + k * 1.6);
+      ctx.globalAlpha = Math.max(Math.min(a, 1), 0); ctx.drawImage(puff, p.x - r, p.y - r, r * 2, r * 2);
+    });
+    sparks = sparks.filter(p => p.life < p.max);
+    sparks.forEach(p => {
+      p.life += dt; const k = p.life / p.max;
+      p.vy *= (1 - dt * .5); p.y += p.vy * dt; p.x += (p.vx + Math.sin(p.life * 5 + p.ph) * 14) * dt;
+      const flick = .6 + .4 * Math.sin(p.life * 22 + p.ph), r = p.r * (1 - k * .6);
+      ctx.globalAlpha = Math.max((1 - k) * flick, 0); ctx.drawImage(glow, p.x - r, p.y - r, r * 2, r * 2);
     });
     requestAnimationFrame(frame);
   }
@@ -806,3 +823,4 @@ onCartChange();
     b.addEventListener("mouseleave", () => { b.style.transform = ""; });
   });
 })();
+
