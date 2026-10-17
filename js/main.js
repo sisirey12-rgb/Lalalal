@@ -307,14 +307,14 @@ function renderCart(){
   const ls = lines();
   $("#cartLines").innerHTML = ls.length ? ls.map(({d, q}) => {
     const o = opts[d.id] || {};
-    const extra = spiceOk(d) ? `<div class="cl-opts"><select data-opt="spice" data-id="${d.id}" aria-label="Spice level for ${esc(d.name)}"><option value="">Spice level</option>${["Mild", "Medium", "Hot"].map(x => `<option${o.spice === x ? " selected" : ""}>${x}</option>`).join("")}</select><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
+    const extra = spiceOk(d) ? `<div class="cl-opts"><div class="dd" data-id="${d.id}"><button type="button" class="dd-btn${o.spice ? " set" : ""}" data-dd aria-haspopup="listbox" aria-expanded="false" aria-label="Spice level for ${esc(d.name)}">${o.spice || "Spice level"}</button><ul class="dd-menu" role="listbox" hidden>${["Mild", "Medium", "Hot"].map(x => `<li><button type="button" role="option" data-spice="${x}" aria-selected="${o.spice === x}"${o.spice === x ? ' class="on"' : ""}>${x}</button></li>`).join("")}<li${o.spice ? "" : " hidden"}><button type="button" role="option" data-spice="" class="clr">Clear</button></li></ul></div><input data-opt="note" data-id="${d.id}" type="text" maxlength="60" value="${esc(o.note || "")}" placeholder="Extras or notes, e.g. extra egg" aria-label="Notes for ${esc(d.name)}"></div>` : "";
     return `<div class="cart-line"><div class="cl-main"><div><strong>${esc(d.name)}</strong><small>${esc(d.label)} each</small></div>${stepperHtml(d.id, q)}</div>${extra}</div>`;
   }).join("")
     : `<p class="empty">Your order is empty. Add a few dishes from the menu.</p>`;
   const lo = lastOrder(); $("#reorderBtn").hidden = !!ls.length || !lo;
   const sg = suggestions();
   $("#cartSuggest").hidden = !sg.length;
-  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
+  $("#cartSuggest").innerHTML = sg.length ? `<h4>Goes well with</h4><div>${sg.map(id => { const d = byId(id); return `<button type="button" data-id="${id}" data-d="1">${dotHtml(d)}<span>${esc(d.name)}</span><b>${esc(d.label)}</b><i class="plus" aria-hidden="true">＋</i></button>`; }).join("")}</div>` : "";
   const bz = busyNow(), w = $("#cartWait");
   w.hidden = bz === null;
   if (bz !== null) { w.className = "wait" + (bz ? " busy" : ""); w.textContent = bz ? `We're busy right now. Please allow about ${CONFIG.wait.busy}.` : `Usually ready in about ${CONFIG.wait.normal}.`; }
@@ -348,7 +348,27 @@ function onCartChange(id){
   $("#msBarCount").textContent = n + (n === 1 ? " item" : " items");
   renderCart();
 }
-document.addEventListener("change", e => { const t = e.target; if (t.dataset && t.dataset.opt === "spice") (opts[t.dataset.id] = opts[t.dataset.id] || {}).spice = t.value; });
+function closeDD() { $$(".dd-menu").forEach(m => { m.hidden = true; const t = m.previousElementSibling; if (t) t.setAttribute("aria-expanded", "false"); }); }
+document.addEventListener("click", e => {
+  const tg = e.target.closest("button[data-dd]");
+  if (tg) {
+    const m = tg.nextElementSibling, was = !m.hidden;
+    closeDD(); m.hidden = was; tg.setAttribute("aria-expanded", String(!was));
+    if (!was) { const sh = tg.closest(".sheet"), r = m.getBoundingClientRect(), sr = sh.getBoundingClientRect(); if (r.bottom > sr.bottom) sh.scrollBy({top: r.bottom - sr.bottom + 16, behavior: "smooth"}); }
+    return;
+  }
+  const op = e.target.closest("button[data-spice]");
+  if (op) {
+    const dd = op.closest(".dd"), o = opts[dd.dataset.id] = opts[dd.dataset.id] || {};
+    o.spice = op.dataset.spice;
+    const btn = dd.querySelector(".dd-btn"); btn.textContent = o.spice || "Spice level"; btn.classList.toggle("set", !!o.spice);
+    dd.querySelectorAll("[data-spice]").forEach(x => { x.classList.toggle("on", x.dataset.spice === o.spice && !!o.spice); x.setAttribute("aria-selected", String(x.dataset.spice === o.spice && !!o.spice)); });
+    dd.querySelector(".clr").parentElement.hidden = !o.spice;
+    closeDD(); btn.focus(); return;
+  }
+  if (!e.target.closest(".dd")) closeDD();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDD(); });
 document.addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.opt === "note") (opts[t.dataset.id] = opts[t.dataset.id] || {}).note = t.value.trim(); });
 $("#reorderBtn").addEventListener("click", () => {
   const lo = lastOrder(); if (!lo) return;
