@@ -29,13 +29,13 @@
 <meta name="twitter:image" content="https://ratanchinese.vercel.app/assets/ratan-original-banner-reference.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Hanken+Grotesk:wght@400;500;600;700&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Restaurant","name":"RATAN Chinese Family Bar and Restaurant","slogan":"Good Food, Good Mood.","servesCuisine":["Chinese","Indian"],"telephone":"+919175112217","address":{"@type":"PostalAddress","streetAddress":"H.No.15/163/2, Shop No. 1 & 2, Opp. Petrol Pump, Dando","addressLocality":"Caranzalem","addressRegion":"Goa","postalCode":"403004","addressCountry":"IN"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"11:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"18:00","closes":"23:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"11:00","closes":"16:00"}],"sameAs":["https://www.instagram.com/ratanchinese_goa","https://www.zomato.com/goa/ratan-restaurant-and-bar-caranzalem"]}
 </script>
 <link rel="preload" as="image" href="assets/ratan-logo.webp" type="image/webp">
 <link rel="preload" as="image" href="assets/ratan-hero.png?v=20261017c" fetchpriority="high">
-<link rel="stylesheet" href="css/style.css?v=20261017-v7">
+<link rel="stylesheet" href="css/style.css?v=20261017-v8">
 <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.11/dist/lenis.css">
 
 </head>
@@ -154,6 +154,12 @@
   </div>
 </section>
 
+<section id="team" hidden aria-label="Our kitchen">
+  <div class="wrap team-grid">
+    <div class="frame"><img id="teamImg" alt=""></div>
+    <div><p class="eyebrow">Meet the kitchen</p><h2 id="teamTitle"></h2><p class="text" id="teamText"></p></div>
+  </div>
+</section>
 <section class="band" id="reviews" hidden aria-label="Guest reviews">
   <div class="wrap">
     <p class="eyebrow">Guest reviews</p>
@@ -250,6 +256,34 @@
 
 </main>
 
+<section class="band" id="groups">
+  <div class="wrap groups-grid">
+    <div>
+      <p class="eyebrow">Parties &amp; groups</p>
+      <h2>Celebrating with a crowd?</h2>
+      <p class="text">Birthday, family get-together or an office lunch? Send us the date and the headcount and we will get back to you on WhatsApp.</p>
+      <a class="ig-card" id="igCard" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1" fill="currentColor"/></svg>
+        <span><b>Follow our kitchen</b><small id="igHandleText">Instagram</small></span><span class="ig-go" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <form class="form panel" id="grpForm" novalidate>
+      <div class="two dt">
+        <div class="field"><label for="gd">Date</label><input id="gd" type="date" required></div>
+        <div class="field"><label for="gg">Guests</label><input id="gg" type="number" min="8" max="500" value="10" required inputmode="numeric"></div>
+      </div>
+      <div class="field"><label for="go">Occasion</label>
+        <select id="go"><option>Birthday</option><option>Family get-together</option><option>Office lunch or dinner</option><option>Other</option></select></div>
+      <div class="two">
+        <div class="field"><label for="gn">Name</label><input id="gn" type="text" required autocomplete="name"></div>
+        <div class="field"><label for="gp">Phone</label><input id="gp" type="tel" required inputmode="tel" autocomplete="tel" pattern="[0-9+\-\s]{7,15}"></div>
+      </div>
+      <button class="btn btn-red" type="submit">Enquire on WhatsApp</button>
+      <div class="msg" id="grpMsg" role="status" aria-live="polite" hidden></div>
+    </form>
+  </div>
+</section>
+
 <footer class="foot" id="footer">
   <div class="foot-cta">
     <div class="foot-cta-in">
@@ -311,6 +345,9 @@
   <button class="btn btn-red" type="button" data-open-cart>Order <span class="badge" id="badgeBottom">0</span></button>
 </nav>
 
+<nav class="dots-nav" id="dotsNav" aria-label="Page sections"></nav>
+<a class="call-chip" id="callChip" href="#" data-call data-live data-state="pending" aria-label="Call the restaurant"><span class="live-dot" aria-hidden="true"></span><span class="live-state">Hours</span><span class="live-detail" hidden></span><b>Call</b></a>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 <button class="mini-cart" id="miniCart" type="button" data-open-cart hidden aria-label="View your order">
   <span class="mc-n" id="mcCount">0 items</span><span class="mc-t" id="mcTotal">₹0</span><span class="mc-go">View order →</span>
 </button>
@@ -347,7 +384,10 @@
 <div class="drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
   <div class="sheet" data-lenis-prevent>
     <div class="sheet-head"><h2 id="cartTitle">Your order<span id="cartCount"></span></h2><button class="x" id="closeCart" type="button">Close</button></div>
+    <p class="wait" id="cartWait" hidden></p>
     <div id="cartLines"></div>
+    <button class="btn btn-line reorder" id="reorderBtn" type="button" hidden>Reorder your last order</button>
+    <div class="suggest" id="cartSuggest" hidden></div>
     <div style="text-align:right"><button class="clear" id="clearCart" type="button" data-clear hidden>Clear order</button></div>
     <div class="total"><span>Total</span><span id="cartTotal">—</span></div>
     <p class="note" id="cartTotalNote" hidden style="margin:-8px 0 18px"></p>
@@ -377,6 +417,6 @@
 
 
 <script id="lenis-js" src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js" async></script>
-<script src="js/main.js?v=20261017-v7" defer></script>
+<script src="js/main.js?v=20261017-v8" defer></script>
 </body>
 </html>
