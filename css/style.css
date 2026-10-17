@@ -639,6 +639,21 @@ body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;bac
 /* step cards lift on hover */
 @media (hover:hover){.steps li{transition:transform .4s var(--out-expo),border-color .3s}.steps li:hover{transform:translateY(-6px);border-color:var(--line-gold)}}
 @media (prefers-reduced-motion:reduce){.hero-img.on,.h1-main,.hero-cta .btn-red,.hero-rule svg,.mq-track i{animation:none!important}}
+/* themed spice dropdown (same row layout as before, custom menu instead of the phone's native popup) */
+.cl-opts{flex-direction:row;gap:8px}
+.cl-opts input{flex:1;width:auto}
+.dd{position:relative;flex:0 0 138px}
+.dd-btn{width:100%;min-height:40px;padding:0 34px 0 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23d8b875' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--muted);font:500 13.5px var(--sans);text-align:left;cursor:pointer;transition:border-color .2s,color .2s}
+.dd-btn.set{color:var(--gold);border-color:var(--line-gold)}
+.dd-btn:focus-visible,.dd-btn[aria-expanded="true"]{outline:none;border-color:var(--gold)}
+.dd-menu{position:absolute;z-index:5;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;border:1px solid var(--line-gold);border-radius:12px;background:#171110;box-shadow:0 18px 40px rgba(0,0,0,.6);animation:ddIn .18s ease}
+.dd-menu[hidden]{display:none}
+@keyframes ddIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dd-menu button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:42px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--ivory);font:500 14px var(--sans);text-align:left;cursor:pointer}
+.dd-menu button:hover,.dd-menu button:focus-visible{outline:none;background:rgba(216,184,117,.1)}
+.dd-menu button.on{color:var(--gold)}
+.dd-menu button.on::after{content:"✓"}
+.dd-menu button.clr{color:var(--muted);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
