@@ -325,6 +325,12 @@ function renderCart(){
   $("#cartCount").textContent = count() ? ` (${count()})` : "";
   $("#clearCart").hidden = !ls.length;
 }
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("#toast"); if (!t) return;
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("on"), 1800);
+}
 function syncMini(){
   const n = count(), mc = $("#miniCart");
   if (!mc) return;
@@ -359,6 +365,7 @@ document.addEventListener("click", e => {
     cart[d.id] = Math.max(0, (cart[d.id] || 0) + Number(step.dataset.d));
     if (!cart[d.id]) { delete cart[d.id]; delete opts[d.id]; }
     onCartChange(d.id);
+    if (Number(step.dataset.d) > 0) toast(`Added ${d.name}`);
     return;
   }
   if (e.target.closest("[data-open-cart]")) { e.preventDefault(); openCart(); return; }
@@ -599,7 +606,7 @@ onCartChange();
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
   const sel = ["#about .about-grid > *", "#specials .wrap > *", "#spList", "#home-menu .wrap > *", ".story-grid > *",
                "#gallery .wrap > *", "#reserve .res-grid > *", "#visit .wrap > .eyebrow", "#visit .wrap > h2", "#visit .vb",
-               ".foot-cta-in > *", ".foot-grid > *"];
+               ".foot-cta-in > *", ".foot-grid > *", "#how .wrap > *", "#how .steps li", ".faq-wrap > *", ".groups-grid > *"];
   const els = [...new Set($$(sel.join(",")))];
   const show = el => {
     el.classList.add("in-view");
@@ -719,4 +726,83 @@ onCartChange();
     document.addEventListener("mouseleave", () => { on = false; ring.classList.remove("on"); });
     (function loop() { x += (tx - x) * 0.2; y += (ty - y) * 0.2; ring.style.transform = `translate3d(${x}px,${y}px,0)`; requestAnimationFrame(loop); })();
   }
+})();
+
+
+/* ---------- V9: steam, marquee, gallery lightbox, magnetic buttons ---------- */
+(function steam() {
+  const cv = $("#steam"); if (!cv) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { cv.style.display = "none"; return; }
+  const ctx = cv.getContext("2d"), hero = $("#hero");
+  let W = 0, H = 0, dpr = 1, running = false, visible = true, parts = [], last = 0;
+  const src = () => {
+    const wide = innerWidth >= 760;
+    const [x, y] = (wide ? cv.dataset.d : cv.dataset.m).split(",").map(Number);
+    return {x: W * x / 100, y: H * y / 100, spread: Math.min(W, H) * (wide ? 0.13 : 0.2)};
+  };
+  function size() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = hero.clientWidth; H = hero.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  // soft puff sprite, drawn once
+  const sp = document.createElement("canvas"); sp.width = sp.height = 128;
+  (function () { const c = sp.getContext("2d"), g = c.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, "rgba(255,246,232,.30)"); g.addColorStop(.45, "rgba(255,240,222,.09)"); g.addColorStop(1, "rgba(255,240,222,0)");
+    c.fillStyle = g; c.fillRect(0, 0, 128, 128); })();
+  function spawn() {
+    const s = src(), unit = Math.min(W, H);
+    parts.push({x: s.x + (Math.random() - .5) * s.spread, y: s.y, vx: (Math.random() - .5) * 8, vy: -(unit * (.05 + Math.random() * .05)),
+      r: unit * (.05 + Math.random() * .05), life: 0, max: 4.5 + Math.random() * 3, ph: Math.random() * 6.28, sw: 10 + Math.random() * 18});
+  }
+  let acc = 0;
+  function frame(t) {
+    if (!running) return;
+    const dt = Math.min((t - last) / 1000, .05); last = t;
+    acc += dt; while (acc > .17) { acc -= .17; if (parts.length < 46) spawn(); }
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = "screen";
+    parts = parts.filter(p => p.life < p.max);
+    parts.forEach(p => {
+      p.life += dt; const k = p.life / p.max;
+      p.y += p.vy * dt * (1 - k * .4); p.x += (p.vx + Math.sin(p.life * 1.3 + p.ph) * p.sw) * dt;
+      const a = Math.sin(Math.PI * Math.min(k * 1.15, 1)) * 0.6, r = p.r * (.7 + k * 1.5);
+      ctx.globalAlpha = Math.max(a, 0); ctx.drawImage(sp, p.x - r, p.y - r, r * 2, r * 2);
+    });
+    requestAnimationFrame(frame);
+  }
+  const go = () => { const want = visible && !document.hidden; if (want && !running) { running = true; last = performance.now(); requestAnimationFrame(frame); } else if (!want) running = false; };
+  size(); addEventListener("resize", size);
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; go(); }).observe(hero);
+  document.addEventListener("visibilitychange", go); go();
+})();
+
+(function marquee() {
+  const t = $("#mqTrack"); if (!t) return;
+  const words = ["Momos", "Hakka Noodles", "Burmese Khao Suey", "Chilly Chicken", "Biryani", "Seafood Thali", "Ramen", "Prawns Cigar Roll", "Fried Rice", "Mocktails"];
+  const one = words.map(w => `<span>${w}</span><i>✦</i>`).join("");
+  t.innerHTML = one + one + one + one;
+})();
+
+(function lightbox() {
+  const imgs = $$("#strip img"), lb = $("#lightbox"); if (!imgs.length || !lb) return;
+  let i = 0, opener = null;
+  const show = n => { i = (n + imgs.length) % imgs.length; $("#lbImg").src = imgs[i].src; $("#lbImg").alt = imgs[i].alt; $("#lbCap").textContent = imgs[i].alt + "  ·  " + (i + 1) + " / " + imgs.length; };
+  const open = n => { opener = document.activeElement; show(n); lb.hidden = false; document.body.style.overflow = "hidden"; if (window.ratanLenis) window.ratanLenis.stop(); lb.querySelector(".lb-x").focus(); };
+  const close = () => { lb.hidden = true; document.body.style.overflow = ""; if (window.ratanLenis) window.ratanLenis.start(); if (opener && opener.focus) opener.focus(); };
+  imgs.forEach((im, n) => { im.tabIndex = 0; im.setAttribute("role", "button"); im.style.cursor = "zoom-in";
+    im.addEventListener("click", () => open(n)); im.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(n); } }); });
+  lb.addEventListener("click", e => { const b = e.target.closest("[data-lb]"); if (b) { b.dataset.lb === "close" ? close() : show(i + Number(b.dataset.lb)); } else if (e.target === lb) close(); });
+  document.addEventListener("keydown", e => { if (lb.hidden) return; if (e.key === "Escape") close(); if (e.key === "ArrowRight") show(i + 1); if (e.key === "ArrowLeft") show(i - 1); });
+  let x0 = null;
+  lb.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, {passive: true});
+  lb.addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1)); x0 = null; });
+})();
+
+(function magnetic() {
+  if (!matchMedia("(hover:hover) and (pointer:fine)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  $$(".hero-cta .btn, .foot-actions .btn, .top .btn").forEach(b => {
+    b.addEventListener("mousemove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .14}px,${(e.clientY - r.top - r.height / 2) * .22}px)`; });
+    b.addEventListener("mouseleave", () => { b.style.transform = ""; });
+  });
 })();
