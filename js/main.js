@@ -3,7 +3,9 @@
 /* ===== Existing RATAN application logic (preserved) ===== */
 
 const IMG = {"ramen": "assets/food-ramen.webp", "interior": "assets/food-interior.webp", "table": "assets/food-table.webp", "food": "assets/food-food.webp", "team": "assets/food-team.webp", "artist": "assets/food-artist.webp", "cigar": "assets/food-cigar.webp", "jhol": "assets/food-jhol.webp", "momos": "assets/food-momos.webp", "wings": "assets/food-wings.webp", "pasta": "assets/food-pasta.webp", "khao": "assets/food-khao.webp", "tempura": "assets/food-tempura.webp", "chilly": "assets/food-chilly.webp", "logo": "assets/ratan-logo.webp", "heroWok": "assets/food-heroWok.webp"};
-IMG.ratanHero = "assets/ratan-hero.png?v=20261017b";
+IMG.ratanHero = "assets/ratan-hero.png?v=20261017c";   // keep identical to the <link rel="preload"> in index.html
+const hm = (h, m = 0) => h * 60 + m;            // minutes after midnight
+const LUNCH = [hm(11), hm(16)], DINNER = [hm(18), hm(23)];
 const CONFIG = {
   restaurant: "RATAN Chinese Family Bar and Restaurant",
   legalName: "Ratan Family Restaurant & Bar",
@@ -16,6 +18,18 @@ const CONFIG = {
   swiggy: "",
   mapsUrl: "https://maps.app.goo.gl/Pyvav81unhEJxuJQ8",
   currency: "₹",
+  // Opening hours, always read in restaurant (Goa) time, whatever the visitor's own clock says.
+  // 0 = Sunday ... 6 = Saturday. Each entry is [opens, closes]. Edit here only; the table and status follow.
+  timezone: "Asia/Kolkata",
+  hours: {
+    0: [LUNCH, DINNER],   // Sunday
+    1: [LUNCH, DINNER],   // Monday
+    2: [LUNCH],           // Tuesday (lunch only)
+    3: [LUNCH, DINNER],   // Wednesday
+    4: [LUNCH, DINNER],   // Thursday
+    5: [LUNCH, DINNER],   // Friday
+    6: [LUNCH, DINNER]    // Saturday
+  },
     // Hero slideshow: each slide uses a landscape food photo (a key from IMG). One slide = no indicators.
   heroSlides: [
     {img: "ratanHero", alt: "RATAN Chinese original hero image", pos: "center center"}
@@ -25,6 +39,42 @@ const CONFIG = {
 // Each item: label = text shown; price = number used for totals (null = "To be confirmed"); view = not orderable online.
 const MENU = [{"id": "i1", "cat": "Specials", "sub": "Specials", "name": "Veg / Non Veg Burmese Khao Suey", "desc": "A harmony of Burmese flavours", "price": null, "label": "₹299 / ₹350", "img": "khao", "featured": false, "view": false}, {"id": "i2", "cat": "Specials", "sub": "Specials", "name": "Ramen Noodle Soup (Non-veg)", "desc": "One bowl. Zero regrets.", "price": 350, "label": "₹350", "img": "ramen", "featured": true, "view": false}, {"id": "i3", "cat": "Specials", "sub": "Specials", "name": "Prawns Cigar Roll", "desc": "Crispy outside. Savory inside.", "price": 290, "label": "₹290", "img": "cigar", "featured": true, "view": false}, {"id": "i4", "cat": "Specials", "sub": "Specials", "name": "Momo - Chicken", "desc": "Steamy, juicy, irresistible.", "price": 160, "label": "₹160", "img": "momos", "featured": false, "view": false}, {"id": "i5", "cat": "Specials", "sub": "Specials", "name": "Jhol Momo", "desc": "Taste the tradition", "price": 200, "label": "₹200", "img": "jhol", "featured": true, "view": false}, {"id": "i6", "cat": "Specials", "sub": "Specials", "name": "BBQ Chicken Wings", "desc": "Bold flavour in every bite", "price": 290, "label": "₹290", "img": "wings", "featured": false, "view": false}, {"id": "i7", "cat": "Specials", "sub": "Specials", "name": "White Sauce Pasta", "desc": "Creamy and cheesy", "price": 299, "label": "₹299", "img": "pasta", "featured": false, "view": false}, {"id": "i8", "cat": "Specials", "sub": "Specials", "name": "Tempura Prawns", "desc": "Golden bites of pure delight", "price": 290, "label": "₹290", "img": "tempura", "featured": false, "view": false}, {"id": "i44", "cat": "Soups", "sub": "Soups (Veg / Non Veg)", "name": "Manchow Soup", "desc": "", "price": null, "label": "₹100 / ₹120", "img": null, "featured": false, "view": false}, {"id": "i45", "cat": "Soups", "sub": "Soups (Veg / Non Veg)", "name": "Hot & Sour Soup", "desc": "", "price": null, "label": "₹100 / ₹120", "img": null, "featured": false, "view": false}, {"id": "i46", "cat": "Soups", "sub": "Soups (Veg / Non Veg)", "name": "Noodles Soup", "desc": "", "price": null, "label": "₹100 / ₹120", "img": null, "featured": false, "view": false}, {"id": "i47", "cat": "Soups", "sub": "Soups (Veg / Non Veg)", "name": "Burmese Chicken Soup", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i48", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Fried Rice", "desc": "", "price": 140, "label": "₹140", "img": null, "featured": false, "view": false}, {"id": "i49", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Schezwan Fried Rice", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i50", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Mushroom Fried Rice", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i51", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Triple Schezwan Rice", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i52", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Burnt Garlic Rice", "desc": "", "price": 170, "label": "₹170", "img": null, "featured": false, "view": false}, {"id": "i53", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Veg Hakka Noodles", "desc": "", "price": 140, "label": "₹140", "img": null, "featured": false, "view": false}, {"id": "i54", "cat": "Chinese", "sub": "Veg Rice & Noodles", "name": "Veg Schezwan Noodles", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i55", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Egg Fried Rice", "desc": "", "price": 140, "label": "₹140", "img": null, "featured": false, "view": false}, {"id": "i56", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Fried Rice", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i57", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Schezwan Rice", "desc": "", "price": 170, "label": "₹170", "img": null, "featured": false, "view": false}, {"id": "i58", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Burnt Garlic Rice", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i59", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Nasi Goreng Rice", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i60", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Rice Noodles (Combination)", "desc": "", "price": 170, "label": "₹170", "img": null, "featured": false, "view": false}, {"id": "i61", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Triple Schezwan Rice", "desc": "", "price": 220, "label": "₹220", "img": null, "featured": false, "view": false}, {"id": "i62", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Prawns Fried Rice", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i63", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Egg Noodles", "desc": "", "price": 140, "label": "₹140", "img": null, "featured": false, "view": false}, {"id": "i64", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Noodles", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i65", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chicken Schezwan Noodles", "desc": "", "price": 170, "label": "₹170", "img": null, "featured": false, "view": false}, {"id": "i66", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Chilly Oyster Noodles", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i67", "cat": "Chinese", "sub": "Non-Veg Rice & Noodles", "name": "Prawns Noodles", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i68", "cat": "Chinese", "sub": "Chinese Main", "name": "Chilly Chicken Gravy", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i69", "cat": "Chinese", "sub": "Chinese Main", "name": "Chicken Manchurian Gravy", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i70", "cat": "Chinese", "sub": "Chinese Main", "name": "Chicken Chilly Oyster Gravy", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i71", "cat": "Chinese", "sub": "Chinese Main", "name": "Chicken Crispy Gravy", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i72", "cat": "Chinese", "sub": "Chinese Main", "name": "Chicken In Chilly Lemon Sauce", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i73", "cat": "Chinese", "sub": "Chinese Main", "name": "Chicken Lollypop Masala Gravy", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i74", "cat": "Chinese", "sub": "Chinese Main", "name": "Prawns Chilly Gravy", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i75", "cat": "Chinese", "sub": "Classic Chinese Combo", "name": "Lollipop Masala with Rice or Noodles", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i76", "cat": "Chinese", "sub": "Classic Chinese Combo", "name": "Chicken Crispy with Rice or Noodles", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i77", "cat": "Indian", "sub": "Veg Main", "name": "Paneer Butter Masala", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i78", "cat": "Indian", "sub": "Veg Main", "name": "Kadai Paneer", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i79", "cat": "Indian", "sub": "Veg Main", "name": "Matter Paneer", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i80", "cat": "Indian", "sub": "Veg Main", "name": "Green Peas Masala", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i81", "cat": "Indian", "sub": "Veg Main", "name": "Mushroom Peas Masala", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i82", "cat": "Indian", "sub": "Veg Main", "name": "Mix Veg", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i83", "cat": "Indian", "sub": "Veg Main", "name": "Dal Tadka", "desc": "", "price": 130, "label": "₹130", "img": null, "featured": false, "view": false}, {"id": "i84", "cat": "Indian", "sub": "Veg Main", "name": "Dal Fry", "desc": "", "price": 120, "label": "₹120", "img": null, "featured": false, "view": false}, {"id": "i85", "cat": "Indian", "sub": "Non-Veg Main", "name": "Butter Chicken", "desc": "", "price": 220, "label": "₹220", "img": null, "featured": false, "view": false}, {"id": "i86", "cat": "Indian", "sub": "Non-Veg Main", "name": "Chicken Masala", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i87", "cat": "Indian", "sub": "Non-Veg Main", "name": "Chicken Handi", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i88", "cat": "Indian", "sub": "Non-Veg Main", "name": "Chicken Kolhapuri", "desc": "", "price": 210, "label": "₹210", "img": null, "featured": false, "view": false}, {"id": "i89", "cat": "Indian", "sub": "Non-Veg Main", "name": "Chicken Kadhai", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i90", "cat": "Indian", "sub": "Non-Veg Main", "name": "Prawns Masala", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i91", "cat": "Indian", "sub": "Non-Veg Main", "name": "Chicken Masala & 3 Lachha Paratha", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i92", "cat": "Indian", "sub": "Breads", "name": "Tandoori Roti", "desc": "", "price": 30, "label": "₹30", "img": null, "featured": false, "view": false}, {"id": "i93", "cat": "Indian", "sub": "Breads", "name": "Butter Roti", "desc": "", "price": 40, "label": "₹40", "img": null, "featured": false, "view": false}, {"id": "i94", "cat": "Indian", "sub": "Breads", "name": "Butter Naan", "desc": "", "price": 70, "label": "₹70", "img": null, "featured": false, "view": false}, {"id": "i95", "cat": "Indian", "sub": "Breads", "name": "Cheese Naan", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i96", "cat": "Indian", "sub": "Breads", "name": "Garlic Naan", "desc": "", "price": 120, "label": "₹120", "img": null, "featured": false, "view": false}, {"id": "i97", "cat": "Indian", "sub": "Breads", "name": "Chapati", "desc": "", "price": 30, "label": "₹30", "img": null, "featured": false, "view": false}, {"id": "i98", "cat": "Indian", "sub": "Breads", "name": "Lacha Paratha", "desc": "", "price": 30, "label": "₹30", "img": null, "featured": false, "view": false}, {"id": "i99", "cat": "Indian", "sub": "Rice", "name": "Chicken Biryani", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i100", "cat": "Indian", "sub": "Rice", "name": "Egg Biryani", "desc": "", "price": 180, "label": "₹180", "img": null, "featured": false, "view": false}, {"id": "i101", "cat": "Indian", "sub": "Rice", "name": "Veg Biryani", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i102", "cat": "Indian", "sub": "Rice", "name": "Dal Khichdi", "desc": "", "price": 130, "label": "₹130", "img": null, "featured": false, "view": false}, {"id": "i103", "cat": "Indian", "sub": "Rice", "name": "Jeera Rice", "desc": "", "price": 140, "label": "₹140", "img": null, "featured": false, "view": false}, {"id": "i104", "cat": "Indian", "sub": "Rice", "name": "Steam Rice", "desc": "", "price": 120, "label": "₹120", "img": null, "featured": false, "view": false}, {"id": "i105", "cat": "Indian", "sub": "Rice", "name": "Regular Rice", "desc": "", "price": 100, "label": "₹100", "img": null, "featured": false, "view": false}, {"id": "i106", "cat": "Thali & Seafood", "sub": "Thali", "name": "Veg Thali", "desc": "", "price": 120, "label": "₹120", "img": null, "featured": false, "view": false}, {"id": "i107", "cat": "Thali & Seafood", "sub": "Thali", "name": "Bangda Thali", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i108", "cat": "Thali & Seafood", "sub": "Thali", "name": "Chicken Thali", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i109", "cat": "Thali & Seafood", "sub": "Thali", "name": "Prawns Thali", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i110", "cat": "Thali & Seafood", "sub": "Thali", "name": "Kingfish Thali", "desc": "", "price": 220, "label": "₹220", "img": null, "featured": false, "view": false}, {"id": "i111", "cat": "Thali & Seafood", "sub": "Thali", "name": "Chonak Thali", "desc": "", "price": 220, "label": "₹220", "img": null, "featured": false, "view": false}, {"id": "i112", "cat": "Thali & Seafood", "sub": "Seafood", "name": "Kingfish Fry", "desc": "", "price": null, "label": "APS", "img": null, "featured": false, "view": false}, {"id": "i113", "cat": "Thali & Seafood", "sub": "Seafood", "name": "Prawns Rawa Fry", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i114", "cat": "Thali & Seafood", "sub": "Seafood", "name": "Squid Rawa Fry", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i115", "cat": "Thali & Seafood", "sub": "Seafood", "name": "Mackerel Rawa Fry", "desc": "", "price": 200, "label": "₹200", "img": null, "featured": false, "view": false}, {"id": "i116", "cat": "Thali & Seafood", "sub": "Seafood", "name": "Lepo Rawa Fry", "desc": "", "price": 250, "label": "₹250", "img": null, "featured": false, "view": false}, {"id": "i117", "cat": "Drinks", "sub": "Beverage", "name": "Fresh Lemon Soda", "desc": "", "price": 50, "label": "₹50", "img": null, "featured": false, "view": false}, {"id": "i118", "cat": "Drinks", "sub": "Beverage", "name": "Fresh Lemon Water", "desc": "", "price": 50, "label": "₹50", "img": null, "featured": false, "view": false}, {"id": "i119", "cat": "Drinks", "sub": "Beverage", "name": "Water Bottle", "desc": "", "price": 25, "label": "₹25", "img": null, "featured": false, "view": false}, {"id": "i120", "cat": "Drinks", "sub": "Beverage", "name": "Soft Drink 750ml", "desc": "", "price": 70, "label": "₹70", "img": null, "featured": false, "view": false}, {"id": "i121", "cat": "Drinks", "sub": "Beverage", "name": "Red Bull", "desc": "", "price": 150, "label": "₹150", "img": null, "featured": false, "view": false}, {"id": "i122", "cat": "Drinks", "sub": "Mocktail", "name": "Virgin Mojito", "desc": "", "price": 170, "label": "₹170", "img": null, "featured": false, "view": false}, {"id": "i123", "cat": "Drinks", "sub": "Mocktail", "name": "Blue Sea", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i124", "cat": "Drinks", "sub": "Mocktail", "name": "Kokum Fizz", "desc": "", "price": 160, "label": "₹160", "img": null, "featured": false, "view": false}, {"id": "i125", "cat": "Drinks", "sub": "Milkshake", "name": "Chocolate Milkshake", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i126", "cat": "Drinks", "sub": "Milkshake", "name": "Vanilla Milkshake", "desc": "", "price": 190, "label": "₹190", "img": null, "featured": false, "view": false}, {"id": "i127", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Kingfisher", "desc": "", "price": null, "label": "₹90", "img": null, "featured": false, "view": true}, {"id": "i128", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Kingfisher Strong", "desc": "", "price": null, "label": "₹90", "img": null, "featured": false, "view": true}, {"id": "i129", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Kingfisher Ultra", "desc": "", "price": null, "label": "₹90", "img": null, "featured": false, "view": true}, {"id": "i130", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Tuborg", "desc": "", "price": null, "label": "₹90", "img": null, "featured": false, "view": true}, {"id": "i131", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Carlsberg Smooth", "desc": "", "price": null, "label": "₹90", "img": null, "featured": false, "view": true}, {"id": "i132", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Corona", "desc": "", "price": null, "label": "₹160", "img": null, "featured": false, "view": true}, {"id": "i133", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "People's Lager Beer", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i134", "cat": "Bar", "sub": "Cold Beers (330ml)", "name": "Heany Can Silver", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i135", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Kingfisher Can", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i136", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Kingfisher Strong Can", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i137", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Kingfisher Draught Can", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i138", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Budweiser Can", "desc": "", "price": null, "label": "₹130", "img": null, "featured": false, "view": true}, {"id": "i139", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Budweiser Magnum Can", "desc": "", "price": null, "label": "₹190", "img": null, "featured": false, "view": true}, {"id": "i140", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Tuborg Can", "desc": "", "price": null, "label": "₹110", "img": null, "featured": false, "view": true}, {"id": "i141", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Carlsberg Smooth Can", "desc": "", "price": null, "label": "₹140", "img": null, "featured": false, "view": true}, {"id": "i142", "cat": "Bar", "sub": "Cold Beers (500ml)", "name": "Carlsberg Elephant Can", "desc": "", "price": null, "label": "₹150", "img": null, "featured": false, "view": true}, {"id": "i143", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Kingfisher", "desc": "", "price": null, "label": "₹150", "img": null, "featured": false, "view": true}, {"id": "i144", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Kingfisher Strong", "desc": "", "price": null, "label": "₹160", "img": null, "featured": false, "view": true}, {"id": "i145", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Kingfisher Ultra", "desc": "", "price": null, "label": "₹160", "img": null, "featured": false, "view": true}, {"id": "i146", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Budweiser", "desc": "", "price": null, "label": "₹170", "img": null, "featured": false, "view": true}, {"id": "i147", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Budweiser Magnum", "desc": "", "price": null, "label": "₹190", "img": null, "featured": false, "view": true}, {"id": "i148", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Tuborg", "desc": "", "price": null, "label": "₹160", "img": null, "featured": false, "view": true}, {"id": "i149", "cat": "Bar", "sub": "Cold Beers (650ml)", "name": "Carlsberg Smooth", "desc": "", "price": null, "label": "₹160", "img": null, "featured": false, "view": true}, {"id": "i150", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Signature", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i151", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Antiquity", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i152", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Rock Ford", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i153", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Oaksmith Silver", "desc": "", "price": null, "label": "₹40 / ₹70", "img": null, "featured": false, "view": true}, {"id": "i154", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Oaksmith Gold", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i155", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Blenders Pride Reserve", "desc": "", "price": null, "label": "₹70 / ₹110", "img": null, "featured": false, "view": true}, {"id": "i156", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Oaken Glow", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i157", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Ballantines", "desc": "", "price": null, "label": "₹95 / ₹190", "img": null, "featured": false, "view": true}, {"id": "i158", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Jim Beam", "desc": "", "price": null, "label": "₹105 / ₹210", "img": null, "featured": false, "view": true}, {"id": "i159", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Indri", "desc": "", "price": null, "label": "₹165 / ₹330", "img": null, "featured": false, "view": true}, {"id": "i160", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Chivas", "desc": "", "price": null, "label": "₹170 / ₹330", "img": null, "featured": false, "view": true}, {"id": "i161", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Glenfiddich", "desc": "", "price": null, "label": "₹280 / ₹560", "img": null, "featured": false, "view": true}, {"id": "i162", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Jack Daniels", "desc": "", "price": null, "label": "₹160 / ₹320", "img": null, "featured": false, "view": true}, {"id": "i163", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Amrut", "desc": "", "price": null, "label": "₹155 / ₹305", "img": null, "featured": false, "view": true}, {"id": "i164", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "J&B", "desc": "", "price": null, "label": "₹95 / ₹190", "img": null, "featured": false, "view": true}, {"id": "i165", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Jameson", "desc": "", "price": null, "label": "₹120 / ₹240", "img": null, "featured": false, "view": true}, {"id": "i166", "cat": "Bar", "sub": "Whisky (30ml / 60ml)", "name": "Big Boss", "desc": "", "price": null, "label": "₹40 / ₹70", "img": null, "featured": false, "view": true}, {"id": "i167", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Black & White", "desc": "", "price": null, "label": "₹90 / ₹180", "img": null, "featured": false, "view": true}, {"id": "i168", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Vat 69", "desc": "", "price": null, "label": "₹80 / ₹130", "img": null, "featured": false, "view": true}, {"id": "i169", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Black Dog Gold", "desc": "", "price": null, "label": "₹120 / ₹220", "img": null, "featured": false, "view": true}, {"id": "i170", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Black Dog Black", "desc": "", "price": null, "label": "₹90 / ₹170", "img": null, "featured": false, "view": true}, {"id": "i171", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Teachers", "desc": "", "price": null, "label": "₹90 / ₹170", "img": null, "featured": false, "view": true}, {"id": "i172", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "Red Label", "desc": "", "price": null, "label": "₹130 / ₹250", "img": null, "featured": false, "view": true}, {"id": "i173", "cat": "Bar", "sub": "Scotch (30ml / 60ml)", "name": "100 Pipers", "desc": "", "price": null, "label": "₹90 / ₹180", "img": null, "featured": false, "view": true}, {"id": "i174", "cat": "Bar", "sub": "Rum (30ml / 60ml)", "name": "Old Monk", "desc": "", "price": null, "label": "₹30 / ₹60", "img": null, "featured": false, "view": true}, {"id": "i175", "cat": "Bar", "sub": "Rum (30ml / 60ml)", "name": "Bacardi Lemone", "desc": "", "price": null, "label": "₹60 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i176", "cat": "Bar", "sub": "Rum (30ml / 60ml)", "name": "Bacardi Black", "desc": "", "price": null, "label": "₹30 / ₹60", "img": null, "featured": false, "view": true}, {"id": "i177", "cat": "Bar", "sub": "Brandy (30ml / 60ml)", "name": "Morpheus", "desc": "", "price": null, "label": "₹50 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i178", "cat": "Bar", "sub": "Breezers", "name": "Blueberry", "desc": "", "price": null, "label": "₹130", "img": null, "featured": false, "view": true}, {"id": "i179", "cat": "Bar", "sub": "Breezers", "name": "Caneberry", "desc": "", "price": null, "label": "₹130", "img": null, "featured": false, "view": true}, {"id": "i180", "cat": "Bar", "sub": "Breezers", "name": "Watermelon", "desc": "", "price": null, "label": "₹130", "img": null, "featured": false, "view": true}, {"id": "i181", "cat": "Bar", "sub": "Vodka (30ml / 60ml)", "name": "Romanov", "desc": "", "price": null, "label": "₹30 / ₹50", "img": null, "featured": false, "view": true}, {"id": "i182", "cat": "Bar", "sub": "Vodka (30ml / 60ml)", "name": "Smirnoff", "desc": "", "price": null, "label": "₹55 / ₹100", "img": null, "featured": false, "view": true}, {"id": "i183", "cat": "Bar", "sub": "Vodka (30ml / 60ml)", "name": "Magic Moment", "desc": "", "price": null, "label": "₹40 / ₹70", "img": null, "featured": false, "view": true}, {"id": "i184", "cat": "Bar", "sub": "Vodka (30ml / 60ml)", "name": "Grey Goose", "desc": "", "price": null, "label": "₹130 / ₹250", "img": null, "featured": false, "view": true}, {"id": "i185", "cat": "Bar", "sub": "Vodka (30ml / 60ml)", "name": "Absolut", "desc": "", "price": null, "label": "₹106 / ₹212", "img": null, "featured": false, "view": true}, {"id": "i186", "cat": "Bar", "sub": "Gin (30ml / 60ml)", "name": "Greater Than", "desc": "", "price": null, "label": "₹70 / ₹120", "img": null, "featured": false, "view": true}, {"id": "i187", "cat": "Bar", "sub": "Gin (30ml / 60ml)", "name": "Ginsin", "desc": "", "price": null, "label": "₹70 / ₹120", "img": null, "featured": false, "view": true}, {"id": "i188", "cat": "Bar", "sub": "Gin (30ml / 60ml)", "name": "Bombay Sapphire", "desc": "", "price": null, "label": "₹135 / ₹270", "img": null, "featured": false, "view": true}, {"id": "i189", "cat": "Bar", "sub": "Wine (Glass / Bottle)", "name": "Port Wine", "desc": "", "price": null, "label": "₹85 / ₹225", "img": null, "featured": false, "view": true}, {"id": "i190", "cat": "Bar", "sub": "Wine (Glass / Bottle)", "name": "Red Wine (Sula)", "desc": "", "price": null, "label": "₹355 / ₹1210", "img": null, "featured": false, "view": true}, {"id": "i191", "cat": "Bar", "sub": "Wine (Glass / Bottle)", "name": "Sula / Big Banyan", "desc": "", "price": null, "label": "₹360 / ₹1210", "img": null, "featured": false, "view": true}, {"id": "i192", "cat": "Bar", "sub": "Wine (Glass / Bottle)", "name": "Sula (White)", "desc": "", "price": null, "label": "₹360 / ₹1010", "img": null, "featured": false, "view": true}];
 const MENU_CATS = ["Specials", "Soups", "Chinese", "Indian", "Thali & Seafood", "Drinks", "Bar"];
+
+/* HOURS-ENGINE:START (pure functions, no DOM, unit-tested) */
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const pad2 = n => String(n).padStart(2, "0");
+const fmtClock = m => { const h = Math.floor(m / 60) % 24, mm = m % 60; return `${h % 12 || 12}${mm ? ":" + pad2(mm) : ""} ${h < 12 ? "AM" : "PM"}`; };
+const fmtSpan = m => { if (m < 60) return `${m} min`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h}h ${pad2(r)}m` : `${h}h`; };
+const goaFmt = new Intl.DateTimeFormat("en-US", { timeZone: CONFIG.timezone, weekday: "short", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+function goaNow(date = new Date()) {
+  const p = {};
+  goaFmt.formatToParts(date).forEach(x => { p[x.type] = x.value; });
+  return { day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday), mins: (Number(p.hour) % 24) * 60 + Number(p.minute), secs: Number(p.second) };
+}
+// state: open | closing (45 min or less left) | soon (opens within the hour) | closed
+function hoursStatus(hours, day, mins) {
+  const today = hours[day] || [];
+  const live = today.find(([o, c]) => mins >= o && mins < c);
+  if (live) {
+    const left = live[1] - mins, back = today.find(([o]) => o >= live[1]);
+    if (left <= 45) return { open: true, state: "closing", label: "Closing soon", detail: `Closes at ${fmtClock(live[1])} · in ${fmtSpan(left)}`, minsLeft: left };
+    return { open: true, state: "open", label: "Open now", detail: `Open until ${fmtClock(live[1])}${back ? ` · back at ${fmtClock(back[0])}` : ""}`, minsLeft: left };
+  }
+  for (let add = 0; add <= 7; add++) {
+    const d = (day + add) % 7;
+    const next = (hours[d] || []).find(([o]) => add > 0 || o > mins);
+    if (!next) continue;
+    const until = add * 1440 + next[0] - mins;
+    const reopening = add === 0 && today.some(([, c]) => c <= mins);
+    const when = add === 0 ? `${reopening ? "Reopens" : "Opens"} today at ${fmtClock(next[0])}`
+               : add === 1 ? `Opens tomorrow at ${fmtClock(next[0])}`
+               : `Opens ${DAY_NAMES[d]} at ${fmtClock(next[0])}`;
+    if (until <= 60) return { open: false, state: "soon", label: "Opening soon", detail: `Opens at ${fmtClock(next[0])} · in ${fmtSpan(until)}`, minsUntil: until };
+    return { open: false, state: "closed", label: "Closed now", detail: add === 0 && until < 360 ? `${when} · in ${fmtSpan(until)}` : when, minsUntil: until };
+  }
+  return { open: false, state: "closed", label: "Closed", detail: "Please call us for timings", minsUntil: Infinity };
+}
+/* HOURS-ENGINE:END */
 
 
 
@@ -124,7 +174,11 @@ function setupSpy(){
 
 /* ---------- dialogs ---------- */
 let lastFocus = null;
-const lock = () => { document.body.style.overflow = ($("#menuSheet").classList.contains("open") || $("#cartDrawer").classList.contains("open")) ? "hidden" : ""; };
+const lock = () => {
+  const sheet = $("#menuSheet").classList.contains("open") || $("#cartDrawer").classList.contains("open");
+  document.body.style.overflow = sheet ? "hidden" : "";
+  if (window.ratanLenis) (sheet || document.body.classList.contains("loading")) ? window.ratanLenis.stop() : window.ratanLenis.start();
+};
 function openMenu(){ lastFocus = document.activeElement; $("#menuSheet").classList.add("open"); $("#menuSheet .ms-body").scrollTop = 0; lock(); $("#closeMenu").focus(); }
 function closeMenu(){ $("#menuSheet").classList.remove("open"); lock(); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
 function openCart(){ lastFocus = document.activeElement; renderCart(); $("#cartDrawer").classList.add("open"); lock(); $("#closeCart").focus(); }
@@ -248,7 +302,6 @@ $("#mapsLink").href = CONFIG.mapsUrl;
 $("#waLink").href = `https://wa.me/${CONFIG.whatsappNumber}`;
 $("#callLink").href = "tel:+" + CONFIG.whatsappNumber;
 $("#emailLine").textContent = pending(CONFIG.email) ? "[Placeholder: email address]" : CONFIG.email;
-if (pending(CONFIG.email)) $("#emailOrder").hidden = true;
 const igHandle = (() => { try { return "@" + new URL(CONFIG.instagram).pathname.replace(/\//g, ""); } catch (e) { return "Instagram"; } })();
 $("#igSlot").innerHTML = pending(CONFIG.instagram)
   ? `<span class="pending">Instagram link to be added</span>`
@@ -260,28 +313,6 @@ $("#platforms").innerHTML = [["Zomato", CONFIG.zomato], ["Swiggy", CONFIG.swiggy
 $("#footContact").innerHTML =
   `<p>${CONFIG.phones.map(esc).join("<br>")}</p><p style="margin-top:10px">${CONFIG.address.map(esc).join("<br>")}</p>` +
   (pending(CONFIG.instagram) ? "" : `<p style="margin-top:10px"><a href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Instagram</a></p>`);
-const dayRows = $$(".hours tr");
-const goaClock = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
-function updateLiveHours() {
-  const parts = Object.fromEntries(goaClock.formatToParts(new Date()).map(p => [p.type, p.value]));
-  const weekday = parts.weekday;
-  const minutes = Number(parts.hour) * 60 + Number(parts.minute);
-  const isTuesday = weekday === "Tuesday";
-  const openNow = (minutes >= 660 && minutes < 960) || (!isTuesday && minutes >= 1080 && minutes < 1380);
-  const nextOpen = minutes < 660 ? "Opens today at 11:00 AM" : (minutes < 1080 && !isTuesday ? "Reopens today at 6:00 PM" : (minutes < 1080 && isTuesday ? "Opens tomorrow at 11:00 AM" : "Opens tomorrow at 11:00 AM"));
-  const state = $("#liveHoursState"), detail = $("#liveHoursDetail"), box = $("#liveHours");
-  if (state && detail && box) {
-    box.classList.toggle("is-open", openNow);
-    box.classList.toggle("is-closed", !openNow);
-    state.textContent = openNow ? "OPEN NOW" : "CLOSED NOW";
-    detail.textContent = openNow ? (minutes < 960 ? "Lunch service · closes at 4:00 PM" : "Dinner service · closes at 11:00 PM") : nextOpen;
-  }
-  if (dayRows.length === 7) dayRows.forEach(row => row.classList.toggle("today", row.querySelector("th")?.textContent.trim() === weekday));
-}
-updateLiveHours();
-setInterval(updateLiveHours, 60000);
-const t0 = new Date(), pad = n => String(n).padStart(2, "0");
-$("#rd").min = `${t0.getFullYear()}-${pad(t0.getMonth() + 1)}-${pad(t0.getDate())}`;
 syncOrderType();
 
 renderSpecials();
@@ -340,117 +371,140 @@ onCartChange();
   onScroll();
 })();
 
-/* ---------- gentle reveal on scroll ---------- */
-(function(){
-  const sel = ["#about .about-grid > *", "#specials .wrap", "#spList", "#home-menu .wrap > *", ".story-grid > *", "#gallery .wrap > *",
-               "#reserve .res-grid > *", "#visit .wrap > .eyebrow", "#visit .wrap > h2", "#visit .vb", ".foot-grid > *"];
+/* ---------- live opening status ---------- */
+(function () {
+  const nodes = $$("[data-live]"), notes = $$("[data-closed-note]"), table = $("#hoursTable");
+  // The static table in index.html is only a no-JS fallback; rebuild it from CONFIG so it can never drift.
+  if (table && table.tBodies[0]) {
+    table.tBodies[0].innerHTML = [1, 2, 3, 4, 5, 6, 0].map(d => {
+      const list = CONFIG.hours[d] || [];
+      const cell = list.length
+        ? list.map(([o, c]) => `${fmtClock(o)} – ${fmtClock(c)}`).join("<br>") + (list.length === 1 ? `<br><small>Closed after ${fmtClock(list[0][1])}</small>` : "")
+        : "Closed";
+      return `<tr data-day="${d}"><th scope="row">${DAY_NAMES[d]}</th><td>${cell}</td></tr>`;
+    }).join("");
+  }
+  const rows = table ? [...table.querySelectorAll("tr[data-day]")] : [];
+  let last = "", timer = null;
+  function paint() {
+    clearTimeout(timer);
+    const now = goaNow(), st = hoursStatus(CONFIG.hours, now.day, now.mins);
+    const key = [now.day, st.state, st.label, st.detail].join("|");
+    if (key !== last) {          // only touch the DOM when something changed, so screen readers are not spammed
+      last = key;
+      nodes.forEach(n => {
+        n.dataset.state = st.state;
+        n.querySelector(".live-state").textContent = st.label;
+        n.querySelector(".live-detail").textContent = st.detail;
+      });
+      notes.forEach(n => {
+        n.hidden = st.open;
+        if (st.open) return;
+        const when = st.detail.replace(/ · in .*$/, "");
+        n.textContent = `We're closed right now. ${when}. ` + (n.dataset.closedNote === "order"
+          ? "You can still send your order and we'll confirm it once we're open."
+          : "You can still send your request and we'll reply once we're open.");
+      });
+      rows.forEach(r => {
+        const on = Number(r.dataset.day) === now.day;
+        r.classList.toggle("today", on);
+        const th = r.querySelector("th");
+        if (on) th.setAttribute("aria-current", "date"); else th.removeAttribute("aria-current");
+      });
+    }
+    timer = setTimeout(paint, (60 - now.secs) * 1000 + 250);   // wake just after the next minute ticks over
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) paint(); });
+  paint();
+})();
+
+/* ---------- scroll reveal (one system; the class is removed once it has played) ---------- */
+(function () {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  const sel = ["#about .orn", "#about .about-grid > *", "#specials .wrap > *", "#spList", "#home-menu .wrap > *", ".story-grid > *",
+               "#gallery .wrap > *", "#reserve .res-grid > *", "#visit .wrap > .eyebrow", "#visit .wrap > h2", "#visit .vb",
+               ".footer-feature-copy", ".footer-lower-top > *"];
   const els = [...new Set($$(sel.join(",")))];
-  const io = "IntersectionObserver" in window ? new IntersectionObserver((entries, obs) => {
-    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add("in-view"); obs.unobserve(en.target); } });
-  }, {threshold: 0.1, rootMargin: "0px 0px -5% 0px"}) : null;
+  const show = el => {
+    el.classList.add("in-view");
+    setTimeout(() => { el.classList.remove("reveal", "in-view"); el.style.removeProperty("--rd"); }, 1300);
+  };
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    // also reveal anything already scrolled past (deep links such as /#reserve), or it would stay invisible
+    if (en.isIntersecting || en.boundingClientRect.top < 0) { io.unobserve(en.target); show(en.target); }
+  }), { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
   els.forEach(el => {
     el.classList.add("reveal");
-    const sibs = el.parentElement ? [...el.parentElement.children] : [];
-    el.style.transitionDelay = (Math.max(0, sibs.indexOf(el)) % 3) * 90 + "ms";
-    if (io) io.observe(el); else el.classList.add("in-view");
+    const i = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
+    el.style.setProperty("--rd", (Math.max(0, i) % 4) * 80 + "ms");
+    io.observe(el);
   });
 })();
 
-/* ---------- loading screen ---------- */
-(function(){
-  const loader = $("#loader"), fill = $("#ldFill");
-  let p = 0, ready = false, finished = false;
-  const MIN = 2650;                            // allow the cinematic logo reveal to finish before the curtain opens
-  const finish = () => {
-    if (finished) return; finished = true;
-    fill.style.transform = "scaleX(1)";
-    setTimeout(() => {
-      loader.classList.add("done");
-      document.body.classList.remove("loading");
-      document.documentElement.classList.add("ready");
-      setTimeout(() => loader.remove(), 1700);
-    }, 280);
-  };
-  const frame = () => {
+/* ---------- entrance gate ---------- */
+(function () {
+  const root = document.documentElement, body = document.body;
+  const gate = $("#gate"), fill = $("#gateFill"), num = $("#gateNum");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!gate) { root.classList.add("ready"); body.classList.remove("loading"); lock(); return; }
+  let seen = false;
+  try { seen = sessionStorage.getItem("ratan:gate") === "1"; } catch (e) {}
+  const MIN = reduce ? 0 : seen ? 700 : 2200;   // first visit gets the full intro, later page loads a short one
+  const MAX = 5500;                              // never hold anyone longer than this, whatever is slow
+  const t0 = performance.now();
+  const hero = $("#heroSlides .hero-img");
+  const heroDone = (!hero ? Promise.resolve() : hero.decode ? hero.decode() : new Promise(r => { if (hero.complete) r(); else hero.onload = hero.onerror = r; })).catch(() => {});
+  const fontsDone = (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).catch(() => {});
+  const loadDone = document.readyState === "complete" ? Promise.resolve() : new Promise(r => window.addEventListener("load", r, { once: true }));
+  let assets = 0, shown = 0, last = t0, finished = false;
+  [[heroDone, 50], [fontsDone, 20], [loadDone, 30]].forEach(([pr, w]) => pr.then(() => { assets += w; }));
+  const paint = v => { num.textContent = Math.round(v); fill.style.transform = "scaleX(" + (v / 100).toFixed(4) + ")"; };
+  const leave = () => {
     if (finished) return;
-    p += ((ready ? 1 : 0.86) - p) * (ready ? 0.2 : 0.035);
-    fill.style.transform = "scaleX(" + p.toFixed(4) + ")";
-    if (ready && p > 0.985) { finish(); return; }
-    requestAnimationFrame(frame);
+    finished = true;
+    paint(100);
+    try { sessionStorage.setItem("ratan:gate", "1"); } catch (e) {}
+    gate.classList.add("is-leaving");
+    setTimeout(() => root.classList.add("ready"), reduce ? 0 : 800);     // hero starts rising as the doors part
+    setTimeout(() => { gate.remove(); body.classList.remove("loading"); lock(); }, reduce ? 50 : 1750);
   };
-  requestAnimationFrame(frame);
-  const markLoaded = () => setTimeout(() => { ready = true; }, Math.max(0, MIN - performance.now()));
-  if (document.readyState === "complete") markLoaded(); else window.addEventListener("load", markLoaded);
-  setTimeout(finish, 5900);                    // safety net; CSS also has a failsafe
+  const tick = now => {
+    if (finished) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const target = Math.min(MIN ? Math.min(1, (now - t0) / MIN) * 100 : 100, assets);
+    shown += (target - shown) * (1 - Math.exp(-dt * 7));
+    if (target >= 100 && shown > 99.4) shown = 100;
+    paint(shown);
+    if (shown >= 100) leave(); else requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  setTimeout(leave, MAX);
 })();
 
-
-/* ===== RATAN premium motion layer ===== */
+/* ---------- smooth scrolling (progressive enhancement: the page works without it) ---------- */
 (function () {
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.documentElement;
-
-  // Gentle reveal: CSS only animates when the observer marks an element visible.
-  const revealSelectors = [
-    '#about .about-grid', '#specials .section-head', '#specials .menu-grid',
-    '#home-menu .section-head', '#home-menu .menu-grid', '#story .story-grid',
-    '#gallery .section-head', '#gallery .gallery-grid', '#reserve .reserve-card',
-    '#visit .visit-grid', '.orn', '.taste li'
-  ];
-  if (!reduceMotion && 'IntersectionObserver' in window) {
-    const targets = [...new Set(revealSelectors.flatMap(sel => [...document.querySelectorAll(sel)]))];
-    targets.forEach((el, i) => {
-      if (el.closest('.cart-drawer, dialog, [hidden]')) return;
-      el.classList.add('motion-reveal');
-      if (el.matches('.taste li, .gallery-grid > *, .menu-grid > *')) {
-        el.style.setProperty('--reveal-delay', `${Math.min((i % 5) * 55, 220)}ms`);
-      }
-    });
-    const revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -35px 0px' });
-    targets.forEach(el => { if (el.classList.contains('motion-reveal')) revealObserver.observe(el); });
-  }
-
-  // Lenis is an enhancement only. If the CDN is unavailable, native scrolling remains intact.
-  function startLenis() {
-    if (reduceMotion || !window.Lenis || root.dataset.lenisReady === 'true') return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function start() {
+    if (reduce || !window.Lenis || window.ratanLenis) return;
     try {
-      const lenis = new window.Lenis({
-        autoRaf: true,
-        smoothWheel: true,
-        syncTouch: false,
-        touchMultiplier: 1,
-        anchors: { offset: 12 },
-        lerp: 0.085
-      });
-      root.dataset.lenisReady = 'true';
-      root.classList.add('lenis-enabled');
-      // Keep a reference for debugging and allow normal native scroll if reduced motion changes.
-      window.ratanLenis = lenis;
-      document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', event => {
-          const href = link.getAttribute('href');
-          if (!href || href === '#') return;
-          const target = document.querySelector(href);
-          if (!target) return;
-          // Don't hijack links inside drawers or controls.
-          if (link.closest('.cart-drawer, dialog')) return;
-          event.preventDefault();
-          lenis.scrollTo(target, { offset: -10 });
-          history.replaceState(null, '', href);
-        });
-      });
-    } catch (err) {
-      // Fail safely: core site functionality must not depend on Lenis.
-      root.classList.remove('lenis-enabled');
-    }
+      window.ratanLenis = new window.Lenis({ autoRaf: true, smoothWheel: true, syncTouch: false, lerp: 0.085 });
+      root.classList.add("lenis-enabled");
+      lock();
+    } catch (err) { root.classList.remove("lenis-enabled"); }
   }
-  if (window.Lenis) startLenis();
-  else window.addEventListener('load', startLenis, { once: true });
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || !window.ratanLenis) return;
+    if (a.matches("[data-open-menu],[data-open-cart],[data-target]") || a.closest(".menu-sheet,.drawer")) return;
+    const id = a.getAttribute("href");
+    if (!id || id === "#") return;
+    const target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    window.ratanLenis.scrollTo(id === "#top" ? 0 : target, { offset: id === "#top" ? 0 : -64 });
+    history.replaceState(null, "", id);
+  });
+  if (window.Lenis) start();
+  else { const tag = $("#lenis-js"); if (tag) tag.addEventListener("load", start, { once: true }); else window.addEventListener("load", start, { once: true }); }
 })();
