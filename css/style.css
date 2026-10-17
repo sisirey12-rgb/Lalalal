@@ -550,7 +550,7 @@ body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;bac
 .suggest div{display:grid;gap:8px}
 .suggest button{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 14px;border:1px dashed var(--line-gold);border-radius:12px;background:transparent;color:var(--ivory);font:500 14px var(--sans);text-align:left;cursor:pointer}
 .suggest button span{flex:1}.suggest button b{color:var(--gold);font-weight:600}
-.suggest button i{font-style:normal;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff}
+.suggest button i.plus{font-style:normal;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff}
 .suggest .dot{margin-right:2px}
 /* order progress */
 .track{display:flex;gap:0;margin:16px 0 4px;padding:0;list-style:none;counter-reset:t}
@@ -570,7 +570,7 @@ body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;bac
 .team-grid .frame img{width:100%;height:100%;object-fit:cover}
 @media (prefers-reduced-motion:reduce){#story::before,#reserve::before,#groups::before{animation:none}.hero-slides{transform:none!important}}
 /* ===== V9 additions ===== */
-.steam{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none}
+.steam{position:absolute;inset:0;z-index:0;width:100%;height:100%;pointer-events:none}
 /* dish marquee */
 .marquee{overflow:hidden;border-block:1px solid var(--line-gold);background:linear-gradient(90deg,#1a0b0d,#120c0c,#1a0b0d);padding:16px 0}
 .mq-track{display:flex;width:max-content;align-items:center;gap:26px;animation:mq 60s linear infinite}
@@ -607,6 +607,46 @@ body::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;bac
 .lb-x{top:14px;right:14px}.lb-nav{top:50%;margin-top:-23px}.lb-nav.prev{left:12px}.lb-nav.next{right:12px}
 .lb-x:hover,.lb-nav:hover{border-color:var(--gold);color:var(--gold)}
 .btn{will-change:transform}
+/* ===== V10: more motion ===== */
+.hero-in{position:relative;z-index:1}
+/* slow Ken Burns drift on the hero photo */
+.js.ready .hero-img.on{animation:kb 24s ease-in-out 3.4s infinite alternate}
+@keyframes kb{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.09) translate3d(-1.2%,-.8%,0)}}
+/* gold sweep across the wordmark */
+.h1-main{background-size:100% 100%,260% 100%;background-image:linear-gradient(180deg,#f0d9a6 0%,#d0ae70 52%,#a98847 100%)}
+@supports (background-clip:text){
+  .js.ready .h1-main{background-image:linear-gradient(105deg,transparent 40%,rgba(255,250,235,.95) 50%,transparent 60%),linear-gradient(180deg,#f0d9a6 0%,#d0ae70 52%,#a98847 100%);background-size:250% 100%,100% 100%;background-repeat:no-repeat;background-position:160% 0,0 0;animation:shine 7s ease-in-out 2.4s infinite}
+}
+@keyframes shine{0%,55%{background-position:160% 0,0 0}100%{background-position:-60% 0,0 0}}
+/* breathing glow on the main call-to-action */
+.hero-cta .btn-red{animation:glowPulse 3.2s ease-in-out 3s infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 10px 28px rgba(181,31,45,.22),0 0 0 0 rgba(216,184,117,.0)}50%{box-shadow:0 14px 38px rgba(181,31,45,.5),0 0 0 7px rgba(216,184,117,.12)}}
+.hero-rule svg{animation:spinSlow 18s linear infinite}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+/* eyebrow rule draws in */
+.reveal .eyebrow::before,.eyebrow.reveal::before{transform-origin:left;animation:drawLine .9s var(--out-expo) .1s both}
+@keyframes drawLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* dish cards pop in one after another */
+#spList .tile.reveal{transform:translateY(34px) scale(.96)}
+#spList .tile:nth-child(3n+2){transition-delay:.08s}#spList .tile:nth-child(3n){transition-delay:.16s}
+/* prices glint */
+.pr{background:linear-gradient(100deg,currentColor 40%,#fff6dc 50%,currentColor 60%) 200% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+.tile:hover .pr,.row:hover .pr{animation:priceGlint 1.1s ease}
+@keyframes priceGlint{to{background-position:-50% 0}}
+/* floating lanterns bob */
+.mq-track i{display:inline-block;animation:twinkle 2.4s ease-in-out infinite}
+@keyframes twinkle{50%{transform:scale(1.5) rotate(90deg);opacity:.6}}
+/* step cards lift on hover */
+@media (hover:hover){.steps li{transition:transform .4s var(--out-expo),border-color .3s}.steps li:hover{transform:translateY(-6px);border-color:var(--line-gold)}}
+@media (prefers-reduced-motion:reduce){.hero-img.on,.h1-main,.hero-cta .btn-red,.hero-rule svg,.mq-track i{animation:none!important}}
+/* themed spice picker (replaces the phone's native dropdown) */
+.cl-opts{flex-direction:column;gap:10px}
+.spice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.spice button{min-height:40px;border:1px solid var(--line-2);border-radius:999px;background:transparent;color:var(--muted);font:600 11.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.spice button::before{content:"🌶";margin-right:6px;filter:grayscale(1) brightness(.9);opacity:.7;font-size:12px}
+.spice button.on{border-color:var(--gold);color:var(--gold);background:rgba(216,184,117,.1)}
+.spice button.on::before{filter:none;opacity:1}
+.cl-opts input{width:100%}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
