@@ -32,7 +32,7 @@ const CONFIG = {
   },
     // Hero slideshow: each slide uses a landscape food photo (a key from IMG). One slide = no indicators.
   heroSlides: [
-    {img: "ratanHero", alt: "RATAN Chinese original hero image", pos: "center center"}
+    {img: "ratanHero", alt: "RATAN Chinese original hero image"}
   ],
   heroTagline: ["Wok-tossed flavours.", "Made for sharing."]
 };
@@ -78,6 +78,19 @@ function hoursStatus(hours, day, mins) {
 
 
 
+// "Veg / Non Veg" dishes carry two prices. Split them into two orderable items so the cart always has an exact total.
+(function splitTwoPriceDishes() {
+  const out = [];
+  MENU.forEach(d => {
+    const m = !d.view && d.price == null && /^₹(\d+) \/ ₹(\d+)$/.exec(d.label);
+    if (!m) { out.push(d); return; }
+    const base = d.name.replace(/^Veg \/ Non Veg\s+/i, "");
+    out.push(Object.assign({}, d, { id: d.id + "v", name: `${base} (Veg)`, price: Number(m[1]), label: `₹${m[1]}` }));
+    out.push(Object.assign({}, d, { id: d.id + "n", name: `${base} (Non\u00a0veg)`, price: Number(m[2]), label: `₹${m[2]}`, featured: false }));
+  });
+  MENU.length = 0; MENU.push(...out);
+})();
+
 const cart = {};
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -87,11 +100,16 @@ const pending = v => !v || /PLACEHOLDER/.test(v);
 const byId = id => MENU.find(x => x.id === id);
 const count = () => Object.values(cart).reduce((a, b) => a + b, 0);
 const lines = () => Object.entries(cart).map(([id, q]) => ({d: byId(id), q}));
-function total(){
-  const ls = lines();
-  if (!ls.length) return "—";
-  if (ls.some(l => l.d.price == null)) return "To be confirmed";
-  return CONFIG.currency + ls.reduce((a, l) => a + l.d.price * l.q, 0).toFixed(2);
+const inr = n => CONFIG.currency + n.toLocaleString("en-IN");
+// sum = everything with a fixed price; open = dishes priced "as per size" that the restaurant confirms
+function totals() {
+  let sum = 0; const open = [];
+  lines().forEach(({d, q}) => { if (d.price == null) open.push(d.name); else sum += d.price * q; });
+  return {sum, open};
+}
+function total() {
+  if (!count()) return "—";
+  return inr(totals().sum);
 }
 
 /* ---------- controls ---------- */
@@ -205,6 +223,9 @@ function renderCart(){
     `<div class="cart-line"><div><strong>${esc(d.name)}</strong><small>${esc(d.label)} each</small></div>${stepperHtml(d.id, q)}</div>`).join("")
     : `<p class="empty">Your order is empty. Add a few dishes from the menu.</p>`;
   $("#cartTotal").textContent = total();
+  const t = totals(), note = $("#cartTotalNote");
+  note.hidden = !t.open.length;
+  note.textContent = t.open.length ? `Not included: ${t.open.join(", ")}. Priced by size, we confirm it when we reply.` : "";
   $("#cartCount").textContent = count() ? ` (${count()})` : "";
   $("#clearCart").hidden = !ls.length;
 }
@@ -258,8 +279,10 @@ function syncOrderType(){
 }
 $$('input[name="otype"]').forEach(r => r.addEventListener("change", syncOrderType));
 function orderText(){
-  const items = lines().map(({d, q}) => `- ${q} x ${d.name} (${d.label})`).join("\n");
-  return `Hi ${CONFIG.restaurant}, I'd like to place an order:\n\n${items}\n\nTotal: ${total()}\n\nOrder type: ${orderType()}\nName: ${$("#on").value.trim()}\nPhone: ${$("#op").value.trim()}\n${$("#oaLabel").textContent}: ${$("#oa").value.trim() || "-"}\nNotes: ${$("#on2").value.trim() || "-"}`;
+  const items = lines().map(({d, q}) => `- ${q} x ${d.name} (${d.label}) = ${d.price == null ? "price on request" : inr(d.price * q)}`).join("\n");
+  const t = totals();
+  const totalLine = `Total: ${inr(t.sum)}${t.open.length ? ` + ${t.open.join(", ")} (price on request)` : ""}\n(Prices exclude VAT & GST, charged extra as applicable)`;
+  return `Hi ${CONFIG.restaurant}, I'd like to place an order:\n\n${items}\n\n${totalLine}\n\nOrder type: ${orderType()}\nName: ${$("#on").value.trim()}\nPhone: ${$("#op").value.trim()}\n${$("#oaLabel").textContent}: ${$("#oa").value.trim() || "-"}\nNotes: ${$("#on2").value.trim() || "-"}`;
 }
 function checkOrder(){
   const msg = $("#orderMsg");
@@ -293,7 +316,7 @@ $$('[data-img]').forEach(el => {
   if (el.dataset.img === 'logo') { el.width = 1078; el.height = 572; }
 });
 $$("#strip img").forEach(img => {
-  const setRatio = () => img.style.setProperty("--r", (img.naturalWidth / img.naturalHeight).toFixed(4));
+  const setRatio = () => img.style.setProperty("--r-img", (img.naturalWidth / img.naturalHeight).toFixed(4));
   if (img.complete && img.naturalWidth) setRatio(); else img.addEventListener("load", setRatio);
 });
 $("#addr").innerHTML = [CONFIG.legalName, ...CONFIG.address].map(esc).join("<br>");
@@ -311,8 +334,15 @@ $("#platforms").innerHTML = [["Zomato", CONFIG.zomato], ["Swiggy", CONFIG.swiggy
     ? `<span class="pending">${name}: verified link to be added</span>`
     : `<a class="btn btn-line" href="${esc(url)}" target="_blank" rel="noopener">Order on ${name}</a>`).join("");
 $("#footContact").innerHTML =
-  `<p>${CONFIG.phones.map(esc).join("<br>")}</p><p style="margin-top:10px">${CONFIG.address.map(esc).join("<br>")}</p>` +
-  (pending(CONFIG.instagram) ? "" : `<p style="margin-top:10px"><a href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Instagram</a></p>`);
+  `<p>${CONFIG.phones.map(p => `<a href="tel:${esc(p.replace(/[^\d+]/g, ""))}">${esc(p)}</a>`).join("<br>")}</p>` +
+  `<p>${CONFIG.address.map(esc).join("<br>")}</p>` +
+  (pending(CONFIG.email) ? "" : `<p><a href="mailto:${esc(CONFIG.email)}">${esc(CONFIG.email)}</a></p>`);
+$("#footSocial").innerHTML = [["Instagram", CONFIG.instagram], ["Zomato", CONFIG.zomato], ["Swiggy", CONFIG.swiggy]]
+  .filter(([, url]) => !pending(url)).map(([name, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${name}</a>`).join("");
+$$("[data-maps]").forEach(a => { a.href = CONFIG.mapsUrl; });
+$$("[data-wa]").forEach(a => { a.href = `https://wa.me/${CONFIG.whatsappNumber}`; });
+$$("[data-call]").forEach(a => { a.href = "tel:+" + CONFIG.whatsappNumber; });
+$("#year").textContent = new Date().getFullYear();
 syncOrderType();
 
 renderSpecials();
@@ -327,7 +357,7 @@ onCartChange();
   $("#heroTag").innerHTML = CONFIG.heroTagline.map(esc).join("<br>");
   const dots = $("#heroDots");
   $("#heroSlides").innerHTML = slides.map((s, i) =>
-    `<img class="hero-img${i === 0 ? " on" : ""}" src="${IMG[s.img]}" alt="${esc(s.alt)}" style="object-position:${esc(s.pos || "50% 50%")}" decoding="async"${i === 0 ? ' fetchpriority="high"' : ""}>`).join("");
+    `<img class="hero-img${i === 0 ? " on" : ""}" src="${IMG[s.img]}" alt="${esc(s.alt)}" ${s.pos ? ` style="object-position:${esc(s.pos)}"` : ""} decoding="async"${i === 0 ? ' fetchpriority="high"' : ""}>`).join("");
   if (slides.length < 2) { dots.hidden = true; return; }
   dots.innerHTML = slides.map((s, i) =>
     `<button type="button" class="${i === 0 ? "on" : ""}" data-slide="${i}" aria-label="Show photo ${i + 1} of ${slides.length}" aria-current="${i === 0}"></button>`).join("");
@@ -384,6 +414,15 @@ onCartChange();
       return `<tr data-day="${d}"><th scope="row">${DAY_NAMES[d]}</th><td>${cell}</td></tr>`;
     }).join("");
   }
+  const foot = $("#footHours");
+  if (foot) {   // group neighbouring days that share the same hours: "Mon", "Tue", "Wed - Sun"
+    const short = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], groups = [];
+    [1, 2, 3, 4, 5, 6, 0].forEach(d => {
+      const key = JSON.stringify(CONFIG.hours[d] || []), g = groups[groups.length - 1];
+      if (g && g.key === key) g.days.push(d); else groups.push({key, days: [d], list: CONFIG.hours[d] || []});
+    });
+    foot.innerHTML = groups.map(g => `<div class="fh"><span>${g.days.length > 1 ? `${short[g.days[0]]} to ${short[g.days[g.days.length - 1]]}` : short[g.days[0]]}</span><span>${g.list.length ? g.list.map(([o, c]) => `${fmtClock(o)} – ${fmtClock(c)}`).join("<br>") : "Closed"}</span></div>`).join("");
+  }
   const rows = table ? [...table.querySelectorAll("tr[data-day]")] : [];
   let last = "", timer = null;
   function paint() {
@@ -421,9 +460,9 @@ onCartChange();
 /* ---------- scroll reveal (one system; the class is removed once it has played) ---------- */
 (function () {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
-  const sel = ["#about .orn", "#about .about-grid > *", "#specials .wrap > *", "#spList", "#home-menu .wrap > *", ".story-grid > *",
+  const sel = ["#about .about-grid > *", "#specials .wrap > *", "#spList", "#home-menu .wrap > *", ".story-grid > *",
                "#gallery .wrap > *", "#reserve .res-grid > *", "#visit .wrap > .eyebrow", "#visit .wrap > h2", "#visit .vb",
-               ".footer-feature-copy", ".footer-lower-top > *"];
+               ".foot-cta-in > *", ".foot-grid > *"];
   const els = [...new Set($$(sel.join(",")))];
   const show = el => {
     el.classList.add("in-view");
@@ -444,7 +483,7 @@ onCartChange();
 /* ---------- entrance gate ---------- */
 (function () {
   const root = document.documentElement, body = document.body;
-  const gate = $("#gate"), fill = $("#gateFill"), num = $("#gateNum");
+  const gate = $("#gate"), fill = $("#gateFill");
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!gate) { root.classList.add("ready"); body.classList.remove("loading"); lock(); return; }
   let seen = false;
@@ -458,7 +497,7 @@ onCartChange();
   const loadDone = document.readyState === "complete" ? Promise.resolve() : new Promise(r => window.addEventListener("load", r, { once: true }));
   let assets = 0, shown = 0, last = t0, finished = false;
   [[heroDone, 50], [fontsDone, 20], [loadDone, 30]].forEach(([pr, w]) => pr.then(() => { assets += w; }));
-  const paint = v => { num.textContent = Math.round(v); fill.style.transform = "scaleX(" + (v / 100).toFixed(4) + ")"; };
+  const paint = v => { fill.style.transform = "scaleX(" + (v / 100).toFixed(4) + ")"; };
   const leave = () => {
     if (finished) return;
     finished = true;
