@@ -1,4 +1,3 @@
-
 /* =====================================================================
    RATAN Chinese Family Bar & Restaurant: stylesheet v5
    One dark theme, one set of tokens. Sections: tokens, base, header,
@@ -336,7 +335,7 @@ body.loading{overflow:hidden}
 .foot-col a:hover{color:var(--gold);transform:translateX(3px)}
 .foot-col p+p{margin-top:12px}
 .foot-col p a{display:inline;padding:0}
-.foot-status{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.foot-status{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}.foot-status .live-dot{flex:none;margin-top:3px}
 .foot-status .live-state{display:block;font:700 12px/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase}
 .foot-status .live-detail{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
 .fh{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
